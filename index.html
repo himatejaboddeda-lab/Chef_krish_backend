@@ -862,7 +862,7 @@ function logRoute(query, meta = {}) {
   if (placeholder) placeholder.remove();
   el.insertBefore(entry, el.firstChild);
 }
-function clearLogsfunction clearLogs() {
+function clearLogs() {
   ['log-entries'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.innerHTML = '<p style="font-size:0.75rem;color:var(--muted);">Cleared.</p>';
@@ -883,7 +883,7 @@ function updateTokenDisplay() {
     if (el) el.textContent = Number(val || 0).toLocaleString();
   });
 }
-function clearTokensfunction clearTokens() {
+function clearTokens() {
   tokenStats = { in: 0, out: 0, q: 0 };
   updateTokenDisplay();
 }
