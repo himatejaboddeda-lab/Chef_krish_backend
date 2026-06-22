@@ -481,7 +481,8 @@
     <span class="badge badge-neo4j">Neo4j</span>
     <span class="badge badge-pinecone">Pinecone</span>
     <span class="badge badge-gate2">Gate 2</span>
-    <button class="badge badge-key" id="key-btn">🔑 Key</button>
+    <!-- key-btn hidden in production — secrets are in Cloudflare Worker env -->
+    <button class="badge badge-key" id="key-btn" style="display:none">🔑 Key</button>
     <button id="cart-btn" onclick="toggleCart()">🛒 Cart <span id="cart-count">0</span></button>
   </div>
 </header>
@@ -669,9 +670,8 @@ let isRecording = false;
 // ─── INIT ────────────────────────────────────────────────────
 window.addEventListener('load', () => {
   checkWorkerHealth();
-  if (!sessionKey) {
-    setTimeout(() => openKeyModal(), 800);
-  }
+  // Key modal disabled in production — Worker uses env.ANTHROPIC_KEY
+  // if (!sessionKey) { setTimeout(() => openKeyModal(), 800); }
 });
 
 async function checkWorkerHealth() {
@@ -747,8 +747,7 @@ async function sendMessage() {
   const input = document.getElementById('user-input');
   const text  = input.value.trim();
   if (!text) return;
-  if (!sessionKey) { openKeyModal(); return; }
-
+  // No key required — Worker uses its own encrypted ANTHROPIC_KEY
   input.value = '';
   input.style.height = 'auto';
 
@@ -762,7 +761,6 @@ async function sendMessage() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': sessionKey
       },
       body: JSON.stringify({
         message: text,
@@ -981,7 +979,7 @@ async function confirmOrder() {
   try {
     await fetch(WORKER_URL + '/order', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': sessionKey },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ items: cartItems, total, sessionId })
     });
   } catch { /* non-blocking */ }
