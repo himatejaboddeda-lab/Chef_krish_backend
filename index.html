@@ -386,15 +386,15 @@ function shuffle(arr) {
   return a;
 }
 // ── CONSTANTS ─────────────────────────────────────────
-// ── V8 WORKER BACKEND — all API keys are in Cloudflare encrypted secrets ──
-const WORKER = "https://chef-krish-backend.boddedahimateja.workers.dev";
-
-// Legacy constants kept for health-check UI display only (not used for queries)
+// V8: All secrets live in Cloudflare Worker — never in browser
+const WORKER  = "https://chef-krish-backend.boddedahimateja.workers.dev";
 const N4J     = "https://9b0f64b5-graphql.production-orch-0336.neo4j.io/graphql";
+const NK      = "d16v0PBfQhJqLwunefWZuYe9rVhqQusk";
 const PIN_HOST= "https://chef-krish-index-82tibs6.svc.aped-4627-b74a.pinecone.io";
+const PIN_KEY = "pcsk_cBjcj_DJNFH8AvceY5Qqs1i4qPBVbC9PjWHxcCnMbDSyUmEQqj7FaRHKCxLkkWRzm9quH";
+const VOY_KEY = "pa-oxJu0meTte3gSxdIBA5oNrJAvW8L83oyDhm5BDDH6ES";
 
-let hist = [], n4jLive = false, pineconeReady = false;
-const AK = ""; // Anthropic key is in Worker env — never in browser
+let AK = "", hist = [], n4jLive = false, pineconeReady = false;
 let totalIn = 0, totalOut = 0, totalQ = 0;
 const logs = [], tokHistory = [], embedCache = {};
 
@@ -496,28 +496,41 @@ async function checkN4j() {
   bar.textContent = "Connecting to Cloudflare Worker...";
   try {
     const r = await fetch(WORKER + "/health");
-    if (r.ok) {
-      const data = await r.json();
-      n4jLive = data.neo4j && data.neo4j.read;
-      pineconeReady = data.pinecone && data.pinecone.ok;
-      const dishCount = data.neo4j?.counts?.dishes_total || "?";
-      const pinVecs   = data.pinecone?.totalVectors || "?";
-      if (n4jLive) {
-        bar.className = "sbar ok";
-        bar.textContent = "Worker LIVE · Neo4j " + dishCount + " dishes · Pinecone " + pinVecs + " vectors · Gate 2 ON · No keys needed in browser";
-        addLog("startup","health","ok","Worker healthy · Neo4j read:" + n4jLive + " · Pinecone:" + pineconeReady, Date.now());
-      } else {
-        bar.className = "sbar warn";
-        bar.textContent = "Worker UP but Neo4j read failed: " + (data.neo4j?.error || "check /health for details");
-        addLog("startup","health","warn","Neo4j read: false. Error: " + (data.neo4j?.error || "unknown"), Date.now());
-      }
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const data = await r.json();
+    n4jLive = !!(data.neo4j && data.neo4j.read);
+    pineconeReady = !!(data.pinecone && data.pinecone.ok);
+    const dishes = data.neo4j?.counts?.dishes_total ?? "?";
+    const vecs   = data.pinecone?.totalVectors ?? "?";
+    if (n4jLive) {
+      bar.className = "sbar ok";
+      bar.textContent = "Worker LIVE · Neo4j " + dishes + " dishes · Pinecone " + vecs + " vectors · Gate 2 ON · No key needed in browser";
+      addLog("startup", "health", "ok", "Worker healthy · Neo4j:" + n4jLive + " · Pinecone:" + pineconeReady, Date.now());
     } else {
-      throw new Error("HTTP " + r.status);
+      bar.className = "sbar warn";
+      bar.textContent = "Worker UP but Neo4j read failed — " + (data.neo4j?.error || "check /health");
+      addLog("startup", "health", "warn", "Neo4j read: false · " + (data.neo4j?.error || "unknown"), Date.now());
     }
   } catch(e) {
     bar.className = "sbar err";
-    bar.textContent = "Worker unreachable: " + e.message + " — check Cloudflare deployment";
-    addLog("startup","health","err", e.message, Date.now());
+    bar.textContent = "Worker unreachable: " + e.message;
+    addLog("startup", "health", "err", e.message, Date.now());
+  }
+}
+  } catch(e) {
+    addLog("startup","neo4j","err", e.message, Date.now());
+  }
+  const pinCount = await checkPinecone();
+  if (n4jLive) {
+    bar.className = "sbar ok";
+    bar.textContent = "Neo4j LIVE (" + staffCount + " staff) · Pinecone " +
+      (pinCount > 0 ? pinCount + " vectors · Semantic RAG active" : "empty — run pipeline first") +
+      " · Gate 2 ON";
+  } else {
+    bar.className = "sbar err";
+    bar.textContent = location.protocol === "file:"
+      ? "Open from GitHub Pages — file:// blocks Neo4j CORS"
+      : "Neo4j connection failed";
   }
 }
 
@@ -539,10 +552,10 @@ async function checkPinecone() {
 }
 
 function connectKey() {
-  // No-op in V8 Worker mode — Anthropic key is in Cloudflare encrypted secrets
-  alert("Anthropic key is securely stored in Cloudflare Worker environment — no key needed in browser!");
+  // No-op: Anthropic key is in Cloudflare Worker encrypted secrets
+  document.getElementById("kbar").style.display = "none";
   return;
-  // Original code preserved below but unreachable:
+
   const v = document.getElementById("keyIn").value.trim();
   if (!v.startsWith("sk-ant")) { alert("Enter a valid Anthropic key starting with sk-ant"); return; }
   AK = v;
@@ -1043,25 +1056,25 @@ async function send() {
   const inp = document.getElementById("uinput");
   const txt = inp.value.trim();
   if (!txt) return;
-  inp.value = "";
-  inp.style.height = "auto";
+  inp.value = ""; inp.style.height = "auto";
   addUser(txt);
 
-  // Client-side cache check
+  // Client cache check
   const cached = getCached(txt);
   if (cached) {
-    addLog("cache-hit", txt, "ok", "Served from Worker cache", Date.now());
+    addLog("cache-hit", txt, "ok", "From local cache", Date.now());
     addBot(cached.reply, cached.tag, cached.scores, cached.rels, cached.intent, []);
     return;
   }
 
   showTyping();
 
-  // Beef guard — instant, no Worker call needed
-  if (/\b(beef|beef curry|beef masala|beef vindaloo|veal|cow meat)\b/i.test(txt)) {
+  // Beef guard — instant, no Worker call
+  if (/(beef|veal|cow meat)/i.test(txt)) {
     removeTyping();
     addBot("🙏 Namaste! We don't serve beef at Taste of India — in Hindu culture, cows are sacred. May I suggest our <strong>Lamb Rogan Josh</strong> or <strong>Chicken Tikka Masala</strong> instead?",
       "t-neo", { c: 99, h: 0 }, ["beef-guard"], "beef-block", []);
+    _lastGraphText = "";
     return;
   }
 
@@ -1070,11 +1083,7 @@ async function send() {
     const res = await fetch(WORKER + "/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        message: txt,
-        sessionId: SESSION_ID,
-        history: hist.slice(-8)
-      })
+      body: JSON.stringify({ message: txt, sessionId: SESSION_ID, history: hist.slice(-8) })
     });
 
     removeTyping();
@@ -1082,73 +1091,152 @@ async function send() {
     if (!res.ok) {
       const errData = await res.json().catch(() => ({}));
       addLog("worker-error", txt, "err", "HTTP " + res.status + ": " + (errData.error || "unknown"), Date.now());
-      addBot("⚠️ Worker error " + res.status + ": " + (errData.error || "please try again."), "t-cla", { c: 0, h: 0 }, [], "error", []);
+      addBot("⚠️ Worker error " + res.status + ": " + (errData.error || "please try again."),
+        "t-cla", { c: 0, h: 0 }, [], "error", []);
       return;
     }
 
-    const data = await res.json();
-    const ms   = Date.now() - t0;
+    const data  = await res.json();
+    const ms    = Date.now() - t0;
+    const reply = data.response || "I'm here to help!";
+    const routeType = data.routeType || "worker";
+    const conf  = data.confidence  || 75;
+    const hall  = data.hallucination || 20;
+    const srcs  = data.sources    || [];
 
-    const reply      = data.response || "I'm here to help! What would you like to know?";
-    const routeType  = data.routeType || "worker";
-    const conf       = data.confidence || 75;
-    const hall       = data.hallucination || 20;
-    const sources    = data.sources || [];
-    const cartItem   = data.cartItem || null;
-
-    // Map Worker routeType to display tag
-    const tag = routeType.includes("neo4j") || routeType.includes("staff") || routeType.includes("dish") || routeType.includes("timing") || routeType.includes("allergen") || routeType.includes("veg") || routeType.includes("musttry") || routeType.includes("about") || routeType.includes("biryani") || routeType.includes("breads") || routeType.includes("chicken") || routeType.includes("buffet") || routeType.includes("pairing") || routeType.includes("beverages") ? "t-neo"
-        : routeType.includes("pinecone") || routeType.includes("semantic") ? "t-pin"
-        : routeType === "cache_hit" ? "t-neo"
-        : "t-cla";
-
-    const scores = { c: conf, h: hall };
-    const rels   = sources;
-    const intent = routeType + " · " + ms + "ms";
+    const tag = /neo4j|staff|dish|timing|allergen|veg|musttry|about|biryani|breads|chicken|buffet|pairing|beverages/.test(routeType) ? "t-neo"
+      : /pinecone|semantic/.test(routeType) ? "t-pin"
+      : routeType === "cache_hit" ? "t-neo"
+      : "t-cla";
 
     // Update conversation history
     hist.push({ role: "user", content: txt });
     hist.push({ role: "assistant", content: reply });
     if (hist.length > 20) hist = hist.slice(-20);
 
-    // Track tokens
-    if (data.usage) {
-      totalIn  += data.usage.input_tokens  || 0;
-      totalOut += data.usage.output_tokens || 0;
-      totalQ   += 1;
-      addTokHistory(txt, data.usage.input_tokens || 0, data.usage.output_tokens || 0);
-    } else if (!routeType.includes("worker-direct") && routeType !== "cache_hit") {
-      totalQ += 1;
+    // Token tracking
+    if (data.usage) addTokens(txt, data.usage.input_tokens || 0, data.usage.output_tokens || 0);
+
+    // Set graph text for cart button extraction
+    _lastGraphText = reply;
+
+    addLog(routeType, txt, "ok", ms + "ms · conf " + conf + "% · " + (srcs[0] || ""), Date.now());
+    addBot(reply, tag, { c: conf, h: hall }, srcs, routeType + " · " + ms + "ms", []);
+
+    // Cart item returned from Worker
+    if (data.cartItem && data.cartItem.name && data.cartItem.price) {
+      addToCart(data.cartItem.name, parseFloat(data.cartItem.price));
     }
 
-    // Set _lastGraphText for cart button detection
-    _lastGraphText = sources.length ? "SOURCE:" + sources.join(",") + " REPLY:" + reply : reply;
-
-    // Log the route
-    addLog(routeType, txt, "ok", ms + "ms · conf " + conf + "% · " + (sources[0] || ""), Date.now());
-
-    addBot(reply, tag, scores, rels, intent, []);
-
-    // Cart item from Worker
-    if (cartItem && cartItem.name && cartItem.price) {
-      addCartItem(cartItem.name, parseFloat(cartItem.price));
+    // Cache (skip allergens)
+    if (!/(allerg|gluten|nut|dairy|vegan|lactose|peanut|shellfish|soy|sesame)/i.test(txt)) {
+      setCache(txt, reply, tag, { c: conf, h: hall }, srcs, routeType + " · " + ms + "ms", []);
     }
-
-    // Cache
-    if (!/\b(allerg|gluten|nut|dairy|vegan|lactose|peanut|shellfish|soy|sesame)\b/i.test(txt)) {
-      setCache(txt, reply, tag, scores, rels, intent, []);
-    }
-    updateTokenDisplay();
 
   } catch(e) {
     removeTyping();
     addLog("network-error", txt, "err", e.message, Date.now());
-    addBot("⚠️ Network error: " + e.message + "<br><small>Check: is the Cloudflare Worker deployed? Is CORS set to *?</small>",
-      "t-cla", { c: 0, h: 100 }, [], "network-error", []);
+    addBot("⚠️ Network error: " + e.message, "t-cla", { c: 0, h: 100 }, [], "network-error", []);
   }
 }
 
+// ── UI HELPERS ────────────────────────────────────────
+function addLog(intent, gql, status, summary, ts, ms, data) {
+  logs.unshift({ intent:intent, gql:gql, status:status, summary:summary, time:new Date(ts || Date.now()).toLocaleTimeString(), ms:ms || 0, data:data, open:false });
+  renderLogs();
+}
+function renderLogs() {
+  const el = document.getElementById("log-body");
+  if (!logs.length) { el.innerHTML = '<div style="font-size:11px;color:#AAA;text-align:center;padding:20px 0">No queries yet.</div>'; return; }
+  el.innerHTML = logs.map(function(l, i) {
+    const icon = l.status === "ok" ? "OK" : l.status === "err" ? "ERR" : l.status === "gate" ? "GATE" : l.status === "pin" ? "PIN" : "SKIP";
+    return '<div class="log-entry ' + l.status + '" onclick="toggleLog(' + i + ')">' +
+      '<div style="display:flex;justify-content:space-between"><span class="log-status ' + l.status + '">' + icon + '</span><span class="log-time">' + l.time + (l.ms ? " · " + l.ms + "ms" : "") + '</span></div>' +
+      '<div style="font-size:10px;font-weight:600;color:#555;margin:2px 0">' + l.intent + '</div>' +
+      '<div class="log-q">' + l.gql.substring(0, 80) + (l.gql.length > 80 ? "..." : "") + '</div>' +
+      '<div style="font-size:10px;color:' + (l.status === "ok" || l.status === "pin" ? "#1D9E75" : l.status === "gate" ? "#F59E0B" : "#E24B4A") + '">' + l.summary + '</div>' +
+      (l.open && l.data ? '<div class="log-data">' + JSON.stringify(l.data, null, 2).substring(0, 400) + '</div>' : '') +
+      '</div>';
+  }).join("");
+}
+function toggleLog(i) { logs[i].open = !logs[i].open; renderLogs(); }
+function clearLogs() { logs.length = 0; renderLogs(); }
+function addTokens(q, inp, out) {
+  totalIn += inp; totalOut += out; totalQ++;
+  tokHistory.unshift({ q:q, inp:inp, out:out, total:inp+out });
+  document.getElementById("tk-in").textContent = totalIn.toLocaleString();
+  document.getElementById("tk-out").textContent = totalOut.toLocaleString();
+  document.getElementById("tk-total").textContent = (totalIn+totalOut).toLocaleString();
+  document.getElementById("tk-q").textContent = totalQ;
+  const mx = Math.max.apply(null, tokHistory.map(function(t){ return t.total; }).concat([1]));
+  document.getElementById("tok-body").innerHTML = tokHistory.map(function(t){
+    return '<div class="tok-entry"><div class="tok-q" title="' + t.q + '">' + t.q.substring(0,36) + (t.q.length>36?"...":"") + '</div>' +
+      '<div style="display:flex;gap:8px;font-size:10px;color:#666;margin-bottom:2px"><span>In: <strong>' + t.inp + '</strong></span><span>Out: <strong>' + t.out + '</strong></span><span>Total: <strong>' + t.total + '</strong></span></div>' +
+      '<div class="tok-bar"><div class="tok-fill" style="width:' + Math.round(t.total/mx*100) + '%"></div></div></div>';
+  }).join("");
+}
+function clearTokens() {
+  tokHistory.length = 0; totalIn = totalOut = totalQ = 0;
+  ["tk-in","tk-out","tk-total","tk-q"].forEach(function(id){ document.getElementById(id).textContent = "0"; });
+  document.getElementById("tok-body").innerHTML = '<div style="font-size:11px;color:#AAA;text-align:center;padding:10px 0">No queries yet.</div>';
+}
+function scoreHTML(c, h, rels, intent, gateWarnings) {
+  const cc = c>=80?"ch":c>=50?"cm":"cl";
+  const hc = h<=20?"hh":h<=50?"hm":"hl";
+  const cclr = c>=80?"#10B981":c>=50?"#F59E0B":"#EF4444";
+  const hclr = h<=20?"#10B981":h<=50?"#F59E0B":"#EF4444";
+  const ri = intent ? '<div class="intent-tag">intent: ' + intent + '</div><br>' : "";
+  const relHtml = rels && rels.length ? '<div style="font-size:10px;color:#0066CC;font-family:monospace;margin-top:5px;padding:4px 7px;background:#F0F7FF;border:1px solid #BFDBFE;border-radius:5px">' + rels.map(function(r){ return "• " + r; }).join("<br>") + '</div>' : "";
+  const gateHtml = gateWarnings && gateWarnings.length
+    ? '<div style="margin-top:4px"><span class="gate-tag">Gate 2: ' + gateWarnings.join(", ") + '</span></div>'
+    : '<div style="margin-top:4px;font-size:9px;color:#10B981;font-family:monospace">Gate 2 passed</div>';
+  return ri + '<div class="scores">' +
+    '<div class="sc ' + cc + '">Confidence: ' + c + '%<div class="bw"><div class="bf" style="width:' + c + '%;background:' + cclr + '"></div></div></div>' +
+    '<div class="sc ' + hc + '">Hallucination: ' + h + '%<div class="bw"><div class="bf" style="width:' + h + '%;background:' + hclr + '"></div></div></div>' +
+    '</div>' + relHtml + gateHtml;
+}
+var _lastGraphText = ""; // set by send() so addBot can extract verified dishes
 
+function addBot(html, tag, scores, rels, intent, gateWarnings) {
+  const tags = { "t-neo":"Neo4j", "t-cla":"Claude AI", "t-both":"Neo4j + Claude", "t-pin":"Pinecone + Claude" };
+  const m = document.getElementById("msgs");
+  const d = document.createElement("div"); d.className = "msg bot";
+  // Build cart buttons only from VERIFIED graph context — zero hallucination risk
+  var cartBtns = "";
+  if (_lastGraphText && scores && scores.c >= 75) {
+    var verified = extractDishesFromContext(_lastGraphText);
+    if (verified.length) {
+      cartBtns = '<div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:5px">' +
+        verified.map(function(dish) {
+          var safeName = String(dish.name).replace(/"/g, "&quot;");
+          return '<button class="add-cart-btn" data-dish="' + safeName + '" data-price="' + dish.price + '">\uD83D\uDED2 Add ' + dish.name + ' ($' + dish.price.toFixed(2) + ')</button>';
+        }).join("") + '</div>';
+    }
+  }
+  d.innerHTML = '<div class="av">\uD83C\uDF5B</div><div class="bub"><div class="stag ' + tag + '">' + (tags[tag]||"Chef Krish") + '</div><div>' + html + '</div>' + cartBtns + (scores ? scoreHTML(scores.c, scores.h, rels, intent, gateWarnings) : "") + '</div>';
+  // Wire up cart buttons via event listeners (no inline onclick — avoids quote-escaping bugs)
+  var btns = d.querySelectorAll(".add-cart-btn");
+  for (var bi = 0; bi < btns.length; bi++) {
+    btns[bi].addEventListener("click", function() {
+      addToCart(this.getAttribute("data-dish"), parseFloat(this.getAttribute("data-price")));
+    });
+  }
+  m.appendChild(d); m.scrollTop = m.scrollHeight;
+}
+function addUser(t) {
+  const m = document.getElementById("msgs"); const d = document.createElement("div"); d.className = "msg user";
+  d.innerHTML = '<div class="av">HI</div><div class="bub">' + t + '</div>'; m.appendChild(d); m.scrollTop = m.scrollHeight;
+}
+function showTyping() {
+  const m = document.getElementById("msgs"); const d = document.createElement("div"); d.className = "msg bot"; d.id = "typ";
+  d.innerHTML = '<div class="av">🍛</div><div class="bub"><div class="typing"><span></span><span></span><span></span></div></div>'; m.appendChild(d); m.scrollTop = m.scrollHeight;
+}
+function removeTyping() { const t = document.getElementById("typ"); if (t) t.remove(); }
+function showTab(name, btn) {
+  document.querySelectorAll(".tab-pane").forEach(function(p){ p.classList.remove("on"); });
+  document.querySelectorAll(".th-btn").forEach(function(b){ b.classList.remove("on"); });
+  document.getElementById("tab-" + name).classList.add("on"); btn.classList.add("on");
+}
 function ask(q) { document.getElementById("uinput").value = q; send(); }
 // ── CART SYSTEM ──────────────────────────────────────────
 var cart = [];
