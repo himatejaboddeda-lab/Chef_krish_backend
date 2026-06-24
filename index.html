@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chef Krish v7</title>
+<title>Chef Krish v8 · Taste of India</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600&display=swap');
 :root{--saffron:#FF6B00;--gold:#D4A017;--cream:#FDF6EC;--dark:#1A0F00;--border:#EDD9C0;}
@@ -145,7 +145,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);height:100vh;displ
   <img class="logo-img" src="https://himatejaboddeda-lab.github.io/Chef_Krish_Testing_V7/chef-krish-logo.png" onerror="this.style.display='none';document.getElementById('logo-fallback').style.display='flex';" alt="Chef Krish">
   <div class="logo" id="logo-fallback" style="display:none;">🍛</div>
   <div class="htext">
-    <h1>Chef Krish v7 — Taste of India</h1>
+    <h1>Chef Krish v8 — Taste of India</h1>
     <p>Neo4j + Pinecone · Semantic RAG · Gate 2 Guardrail · Monroe LA</p>
   </div>
   <div class="hdr-right">
@@ -194,7 +194,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);height:100vh;displ
       <button class="qbtn" onclick="ask('something mild and creamy')"><span class="qt">Something mild and creamy</span><span class="qs">Pinecone semantic</span></button>
       <button class="qbtn" onclick="ask('similar to butter chicken')"><span class="qt">Similar to butter chicken</span><span class="qs">Pinecone — excludes itself</span></button>
       <button class="qbtn" onclick="ask('something warming and hearty')"><span class="qt">Warming and hearty</span><span class="qs">Pinecone semantic</span></button>
-      <button class="qbtn" onclick="ask("i'm feeling adventurous")"><span class="qt">Feeling adventurous</span><span class="qs">Pinecone semantic</span></button>
+      <button class="qbtn" onclick="ask('i\'m feeling adventurous')"><span class="qt">Feeling adventurous</span><span class="qs">Pinecone semantic</span></button>
       <button class="qbtn" onclick="ask('good for kids')"><span class="qt">Good for kids</span><span class="qs">Pinecone semantic</span></button>
       <button class="qbtn" onclick="ask('something for a date night')"><span class="qt">Date night dish</span><span class="qs">Pinecone semantic</span></button>
       <button class="qbtn" onclick="ask('i want something like a taco')"><span class="qt">Something like a taco</span><span class="qs">RAG redirect + Pinecone</span></button>
@@ -230,7 +230,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);height:100vh;displ
     <div class="messages" id="msgs">
       <div class="msg bot"><div class="av">🍛</div><div class="bub">
         <div class="stag t-both">📊 Neo4j + Pinecone</div>
-        <strong>Chef Krish v7</strong> — Neo4j + Pinecone 🙏<br><br>
+        <strong>Chef Krish v8</strong> — Neo4j + Pinecone 🙏<br><br>
         Routing fixed: natural language goes to <strong>Pinecone semantic search</strong>. Exact facts go to <strong>Neo4j</strong>. Beef is blocked. "Similar to X" excludes X from results. Gate 2 guardrail on every reply.<br><br>
         Add your Anthropic key above and ask anything!
       </div></div>
@@ -517,22 +517,7 @@ async function checkN4j() {
     addLog("startup", "health", "err", e.message, Date.now());
   }
 }
-  } catch(e) {
-    addLog("startup","neo4j","err", e.message, Date.now());
-  }
-  const pinCount = await checkPinecone();
-  if (n4jLive) {
-    bar.className = "sbar ok";
-    bar.textContent = "Neo4j LIVE (" + staffCount + " staff) · Pinecone " +
-      (pinCount > 0 ? pinCount + " vectors · Semantic RAG active" : "empty — run pipeline first") +
-      " · Gate 2 ON";
-  } else {
-    bar.className = "sbar err";
-    bar.textContent = location.protocol === "file:"
-      ? "Open from GitHub Pages — file:// blocks Neo4j CORS"
-      : "Neo4j connection failed";
-  }
-}
+
 
 async function checkPinecone() {
   try {
