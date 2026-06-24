@@ -1099,14 +1099,32 @@ async function send() {
     hist.push({ role: "assistant", content: reply });
     if (hist.length > 20) hist = hist.slice(-20);
 
-    // Token tracking
-    if (data.usage) addTokens(txt, data.usage.input_tokens || 0, data.usage.output_tokens || 0);
+    // Token tracking — increment Q always; input/output only when Claude was called
+    if (data.usage) {
+      addTokens(txt, data.usage.input_tokens || 0, data.usage.output_tokens || 0);
+    } else {
+      // cheapRouter / cache hit — count the question but no Claude tokens
+      totalQ++;
+      document.getElementById("tk-q").textContent = totalQ;
+    }
 
     // Set graph text for cart button extraction
     _lastGraphText = reply;
 
     addLog(routeType, txt, "ok", ms + "ms · conf " + conf + "% · " + (srcs[0] || ""), Date.now());
-    addBot(reply, tag, { c: conf, h: hall }, srcs, routeType + " · " + ms + "ms", []);
+    // Allergen cross-check: if user mentioned allergy earlier, warn on dish responses
+    let allergenWarning = "";
+    const recentHistory = hist.slice(-12).map(function(h){ return (h.content||"").toLowerCase(); }).join(" ");
+    const hasAllergyMention = /\b(dairy|gluten|nut|peanut|shellfish|lactose|allerg|intoleran)\b/.test(recentHistory);
+    if (hasAllergyMention && /\b(butter|cream|cheese|paneer|ghee|milk|naan|kulcha)\b/i.test(reply)) {
+      allergenWarning = "<br><br>⚠️ <strong>Allergy reminder:</strong> This dish may contain ingredients you mentioned sensitivity to. Always inform our staff of food allergies before ordering — dishes are prepared in a shared kitchen.";
+    }
+
+    // Convert **markdown** to <strong>HTML</strong> for bold rendering
+    const displayReply = reply
+      .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+      .replace(/\n/g, "<br>") + allergenWarning;
+    addBot(displayReply, tag, { c: conf, h: hall }, srcs, routeType + " · " + ms + "ms", []);
 
     // Cart item returned from Worker
     if (data.cartItem && data.cartItem.name && data.cartItem.price) {
