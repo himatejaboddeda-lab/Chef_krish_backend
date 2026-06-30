@@ -419,8 +419,11 @@ async function send() {
       .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
       .replace(/\n/g, "<br>");
 
-    addBot(displayReply, tag, { c: conf, h: hall }, srcs, routeType);
+    addBot(displayReply, tag, { c: conf, h: hall }, srcs, routeType, data.dishes);
 
+    // Auto-add only fires for explicit order_request intent (Worker sets
+    // cartItem). For all other intents (dish lookup, similarity, etc.)
+    // the user clicks one of the Add-to-cart buttons rendered above.
     if (data.cartItem && data.cartItem.name && data.cartItem.price) {
       addToCart(data.cartItem.name, parseFloat(data.cartItem.price));
     }
@@ -520,11 +523,34 @@ function scoreHTML(c, h, rels, intent) {
     '</div>' + relHtml;
 }
 
-function addBot(html, tag, scores, rels, intent) {
+function addBot(html, tag, scores, rels, intent, dishes) {
   const tags = { "t-neo":"Neo4j", "t-cla":"Claude AI", "t-both":"Neo4j + Claude", "t-pin":"Pinecone + Claude" };
   const m = document.getElementById("msgs");
   const d = document.createElement("div"); d.className = "msg bot";
-  d.innerHTML = '<div class="av">🍛</div><div class="bub"><div class="stag ' + tag + '">' + (tags[tag]||"Chef Krish") + '</div><div>' + html + '</div>' + (scores ? scoreHTML(scores.c, scores.h, rels, intent) : "") + '</div>';
+
+  // Cart buttons — built ONLY from the Worker's verified `dishes` array
+  // (name + price as confirmed by Neo4j), never parsed out of the prose
+  // reply text. This is what makes the button appear for dish lookups,
+  // similarity recommendations, category browses, etc. — not just the
+  // narrow order_request intent.
+  let cartBtns = "";
+  if (dishes && dishes.length) {
+    cartBtns = '<div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:5px">' +
+      dishes.map(dish => {
+        const safeName = String(dish.name).replace(/"/g, "&quot;");
+        const price = parseFloat(dish.price) || 0;
+        return '<button class="add-cart-btn" data-dish="' + safeName + '" data-price="' + price + '">🛒 Add ' + dish.name + ' ($' + price.toFixed(2) + ')</button>';
+      }).join("") + '</div>';
+  }
+
+  d.innerHTML = '<div class="av">🍛</div><div class="bub"><div class="stag ' + tag + '">' + (tags[tag]||"Chef Krish") + '</div><div>' + html + '</div>' + cartBtns + (scores ? scoreHTML(scores.c, scores.h, rels, intent) : "") + '</div>';
+
+  d.querySelectorAll(".add-cart-btn").forEach(btn => {
+    btn.addEventListener("click", function() {
+      addToCart(this.getAttribute("data-dish"), parseFloat(this.getAttribute("data-price")));
+    });
+  });
+
   m.appendChild(d); m.scrollTop = m.scrollHeight;
 }
 function addUser(t) {
