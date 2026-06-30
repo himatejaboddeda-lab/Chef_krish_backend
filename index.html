@@ -292,11 +292,11 @@ function getCached(query) {
     return obj;
   } catch(e) { return null; }
 }
-function setCache(query, reply, tag, scores, rels, intent) {
+function setCache(query, reply, tag, scores, rels, intent, dishes) {
   if (CACHE_NEVER_RE.test(query)) return;
   try {
     const key = CACHE_PREFIX + query.trim().toLowerCase();
-    sessionStorage.setItem(key, JSON.stringify({ reply, tag, scores, rels, intent, ts: Date.now() }));
+    sessionStorage.setItem(key, JSON.stringify({ reply, tag, scores, rels, intent, dishes, ts: Date.now() }));
   } catch(e) {}
 }
 
@@ -366,7 +366,7 @@ async function send() {
   const cached = getCached(txt);
   if (cached) {
     addLog("cache-hit", txt, "ok", "From local cache", Date.now());
-    addBot(cached.reply, cached.tag, cached.scores, cached.rels, cached.intent);
+    addBot(cached.reply, cached.tag, cached.scores, cached.rels, cached.intent, cached.dishes);
     return;
   }
 
@@ -396,8 +396,18 @@ async function send() {
     const hall = data.hallucination ?? 20;
     const srcs = data.sources || [];
 
-    const tag = /neo4j|staff|dish|timing|allergen|veg|musttry|about|biryani|breads|chicken|buffet|pairing|beverages/i.test(routeType) ? "t-neo"
-      : /pinecone|semantic/i.test(routeType) ? "t-pin"
+    // Display label comes DIRECTLY from the Worker's trace.displayLabel —
+    // computed server-side from what actually produced the data (real
+    // Neo4j query vs. canonical/hardcoded fallback vs. beef guardrail vs.
+    // Claude-phrased text). Previously this was guessed client-side via
+    // regex on routeType, which is exactly why canonical hours and the
+    // beef guardrail were mislabeled as "Claude AI" — neither routeType
+    // string actually contained a word the regex was looking for.
+    const displayLabel = (data.trace && data.trace.displayLabel) || "Neo4j";
+    const tag = displayLabel === "Beef Guard" ? "t-neo"
+      : displayLabel === "Worker Direct" ? "t-neo"
+      : displayLabel === "Neo4j" ? "t-neo"
+      : displayLabel === "Pinecone + Neo4j hydration" ? "t-pin"
       : routeType === "cache_hit" ? "t-neo"
       : "t-cla";
 
@@ -419,7 +429,7 @@ async function send() {
       .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
       .replace(/\n/g, "<br>");
 
-    addBot(displayReply, tag, { c: conf, h: hall }, srcs, routeType, data.dishes);
+    addBot(displayReply, tag, { c: conf, h: hall }, srcs, displayLabel, data.dishes);
 
     // Auto-add only fires for explicit order_request intent (Worker sets
     // cartItem). For all other intents (dish lookup, similarity, etc.)
@@ -429,7 +439,7 @@ async function send() {
     }
 
     if (!CACHE_NEVER_RE.test(txt)) {
-      setCache(txt, reply, tag, { c: conf, h: hall }, srcs, routeType);
+      setCache(txt, reply, tag, { c: conf, h: hall }, srcs, displayLabel, data.dishes);
     }
   } catch(e) {
     removeTyping();
@@ -448,6 +458,9 @@ function renderTrace(query, trace, conf, hall, ms, gate2Result) {
   const entities = trace.entities && Object.keys(trace.entities).length
     ? Object.entries(trace.entities).map(([k,v]) => `${k}: ${JSON.stringify(v)}`).join("<br>")
     : "none";
+  const constraintsText = trace.constraints && trace.constraints.length
+    ? JSON.stringify(trace.constraints)
+    : "none";
 
   el.innerHTML =
     '<div class="cp-card">' +
@@ -456,12 +469,16 @@ function renderTrace(query, trace, conf, hall, ms, gate2Result) {
       '<div class="cp-row"><span>Frontend fn</span><span>' + (trace.frontendAction || "send()") + '</span></div>' +
       '<div class="cp-row"><span>Worker route</span><span>' + (trace.workerRoute || "/chat") + '</span></div>' +
       '<div class="cp-row"><span>Intent</span><span>' + (trace.intent || "—") + '</span></div>' +
+      '<div class="cp-row"><span>Previous intent</span><span>' + (trace.previousIntent || "none") + '</span></div>' +
       '<div class="cp-row"><span>Entities</span><span>' + entities + '</span></div>' +
+      '<div class="cp-row"><span>Constraints</span><span>' + constraintsText + '</span></div>' +
+      '<div class="cp-row"><span>Selected tool</span><span>' + (trace.selectedTool || "none") + '</span></div>' +
       '<div class="cp-row"><span>Tools used</span><span>' + (trace.toolsUsed || []).join(", ") + '</span></div>' +
-      '<div class="cp-row"><span>Neo4j query</span><span>' + (trace.neo4jQueryName || "n/a") + '</span></div>' +
+      '<div class="cp-row"><span>Neo4j query type</span><span>' + (trace.neo4jQueryType || "n/a") + '</span></div>' +
       '<div class="cp-row"><span>Pinecone used</span><span>' + (trace.pineconeUsed ? "yes" : "no") + '</span></div>' +
       '<div class="cp-row"><span>Claude used</span><span>' + (trace.claudeUsed ? "yes" : "no") + '</span></div>' +
       '<div class="cp-row"><span>Cache</span><span>' + (trace.cacheStatus || "miss") + '</span></div>' +
+      '<div class="cp-row"><span>Display label</span><span>' + (trace.displayLabel || "—") + '</span></div>' +
       '<div class="cp-row"><span>Confidence</span><span>' + conf + '%</span></div>' +
       '<div class="cp-row"><span>Hallucination</span><span>' + hall + '%</span></div>' +
       '<div class="cp-row"><span>Latency</span><span>' + ms + 'ms</span></div>' +
@@ -523,8 +540,7 @@ function scoreHTML(c, h, rels, intent) {
     '</div>' + relHtml;
 }
 
-function addBot(html, tag, scores, rels, intent, dishes) {
-  const tags = { "t-neo":"Neo4j", "t-cla":"Claude AI", "t-both":"Neo4j + Claude", "t-pin":"Pinecone + Claude" };
+function addBot(html, tag, scores, rels, displayLabel, dishes) {
   const m = document.getElementById("msgs");
   const d = document.createElement("div"); d.className = "msg bot";
 
@@ -543,7 +559,10 @@ function addBot(html, tag, scores, rels, intent, dishes) {
       }).join("") + '</div>';
   }
 
-  d.innerHTML = '<div class="av">🍛</div><div class="bub"><div class="stag ' + tag + '">' + (tags[tag]||"Chef Krish") + '</div><div>' + html + '</div>' + cartBtns + (scores ? scoreHTML(scores.c, scores.h, rels, intent) : "") + '</div>';
+  // Badge text is the Worker's precise displayLabel — not a generic
+  // 4-value lookup derived from the CSS color class. This is the actual
+  // fix for hours and beef-guard answers showing as "Claude AI".
+  d.innerHTML = '<div class="av">🍛</div><div class="bub"><div class="stag ' + tag + '">' + (displayLabel || "Chef Krish") + '</div><div>' + html + '</div>' + cartBtns + (scores ? scoreHTML(scores.c, scores.h, rels, displayLabel) : "") + '</div>';
 
   d.querySelectorAll(".add-cart-btn").forEach(btn => {
     btn.addEventListener("click", function() {
