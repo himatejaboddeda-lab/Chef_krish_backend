@@ -3,17 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chef Krish v8 · Taste of India</title>
+<title>Chef Krish v9 · Taste of India</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600&display=swap');
 :root{--saffron:#FF6B00;--gold:#D4A017;--cream:#FDF6EC;--dark:#1A0F00;--border:#EDD9C0;}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'DM Sans',sans-serif;background:var(--cream);height:100vh;display:flex;flex-direction:column;overflow:hidden;}
 .hdr{background:linear-gradient(135deg,#1A0F00,#3D1A00);padding:9px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
-.logo{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--saffron),var(--gold));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.logo-img{width:38px;height:38px;border-radius:50%;object-fit:cover;flex-shrink:0;}
 .htext h1{font-family:'Playfair Display',serif;color:#FDF6EC;font-size:15px;}
 .htext p{color:rgba(255,255,255,0.4);font-size:10px;margin-top:1px;}
-.hpills{margin-left:auto;display:flex;gap:5px;flex-wrap:wrap;}
+.hdr-right{margin-left:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.hpills{display:flex;gap:5px;flex-wrap:wrap;}
 .pill{padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;display:flex;align-items:center;gap:3px;}
 .pn{background:rgba(1,139,255,0.18);color:#70C8FF;border:1px solid rgba(1,139,255,0.35);}
 .pc{background:rgba(124,58,237,0.18);color:#C4B5FD;border:1px solid rgba(124,58,237,0.35);}
@@ -25,15 +28,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);height:100vh;displ
 .sbar.ok{background:#ECFDF5;border-color:#6EE7B7;color:#065F46;}
 .sbar.warn{background:#FFFBEB;border-color:#FCD34D;color:#92400E;}
 .sbar.err{background:#FEF2F2;border-color:#FCA5A5;color:#991B1B;}
-.kbar{background:#FFF7ED;border-bottom:1px solid #FED7AA;padding:7px 14px;display:flex;align-items:center;gap:7px;flex-wrap:wrap;flex-shrink:0;}
-.kbar label{font-size:11px;font-weight:600;color:var(--dark);white-space:nowrap;}
-.kbar input{flex:1;min-width:160px;border:1.5px solid #FED7AA;border-radius:6px;padding:4px 9px;font-family:monospace;font-size:11px;outline:none;background:white;}
-.kbar input:focus{border-color:var(--saffron);}
-.kbtn{padding:5px 12px;background:var(--saffron);color:white;border:none;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;}
 .main{display:flex;flex:1;overflow:hidden;}
-.tabs-wrap{width:290px;flex-shrink:0;border-right:1px solid var(--border);display:flex;flex-direction:column;background:white;}
+.tabs-wrap{width:300px;flex-shrink:0;border-right:1px solid var(--border);display:flex;flex-direction:column;background:white;}
 .tab-header{display:flex;border-bottom:1px solid var(--border);}
-.th-btn{flex:1;padding:8px 4px;font-size:11px;font-weight:600;cursor:pointer;border:none;background:transparent;color:#888;border-bottom:2px solid transparent;transition:all .15s;}
+.th-btn{flex:1;padding:8px 3px;font-size:10px;font-weight:600;cursor:pointer;border:none;background:transparent;color:#888;border-bottom:2px solid transparent;transition:all .15s;}
 .th-btn.on{color:var(--saffron);border-bottom-color:var(--saffron);background:rgba(255,107,0,0.04);}
 .tab-pane{display:none;flex:1;overflow-y:auto;padding:10px;}
 .tab-pane.on{display:block;}
@@ -98,11 +96,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);height:100vh;displ
 .ibar textarea:focus{border-color:var(--saffron);background:white;}
 .ibtn{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,var(--saffron),#FF8C00);border:none;cursor:pointer;font-size:15px;color:white;flex-shrink:0;}
 .clr-btn{font-size:10px;color:#888;cursor:pointer;border:none;background:none;padding:2px 6px;}
-</style>
-<script src="https://accounts.google.com/gsi/client" async defer></script>
-<style>
-/* ── CART & SIGNIN ADDITIONS ── */
-.hdr-right{margin-left:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 .signin-btn{display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;border:1px solid rgba(255,255,255,0.25);background:rgba(255,255,255,0.1);color:white;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;}
 .signin-btn:hover{background:rgba(255,255,255,0.2);}
 .signin-btn img{width:14px;height:14px;border-radius:50%;}
@@ -136,1303 +129,105 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);height:100vh;displ
 .wa-btn:disabled{background:#AAA;cursor:not-allowed;}
 .add-cart-btn{display:inline-flex;align-items:center;gap:4px;margin-top:7px;padding:5px 11px;background:linear-gradient(135deg,var(--saffron),#FF8C00);color:white;border:none;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;transition:all .15s;}
 .add-cart-btn:hover{opacity:0.88;}
-.signin-wall{background:#FFF7ED;border:1px solid #FED7AA;border-radius:8px;padding:12px;margin-top:8px;font-size:12px;color:#92400E;text-align:center;}
-.logo-img{width:38px;height:38px;border-radius:50%;object-fit:cover;flex-shrink:0;}
+/* Code Path tab */
+.cp-card{border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:8px;background:white;}
+.cp-card h4{font-size:11px;font-weight:700;color:var(--saffron);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;}
+.cp-arrow{font-family:monospace;font-size:11px;color:#185FA5;background:#F0F7FF;border:1px solid #BFDBFE;border-radius:5px;padding:6px 8px;margin-bottom:6px;word-break:break-all;}
+.cp-row{display:flex;justify-content:space-between;font-size:11px;padding:3px 0;border-bottom:1px solid #F5F0E8;}
+.cp-row span:first-child{color:#888;font-weight:600;}
+.cp-row span:last-child{color:var(--dark);font-family:monospace;text-align:right;max-width:60%;}
+.cp-empty{font-size:11px;color:#AAA;text-align:center;padding:30px 10px;}
 </style>
 </head>
 <body>
-<div class="hdr">
-  <img class="logo-img" src="https://himatejaboddeda-lab.github.io/Chef_Krish_Testing_V7/chef-krish-logo.png" onerror="this.style.display='none';document.getElementById('logo-fallback').style.display='flex';" alt="Chef Krish">
-  <div class="logo" id="logo-fallback" style="display:none;">🍛</div>
+
+<!-- HEADER -->
+<header class="hdr">
+  <img class="logo-img" src="https://himatejaboddeda-lab.github.io/Chef_Krish_Testing_V7/chef-krish-logo.png" alt="Chef Krish" onerror="this.style.display='none'">
   <div class="htext">
-    <h1>Chef Krish v8 — Taste of India</h1>
-    <p>Neo4j + Pinecone · Semantic RAG · Gate 2 Guardrail · Monroe LA</p>
+    <h1>Chef Krish v9 — Taste of India</h1>
+    <p>Intent-First Router · Neo4j + Pinecone · Gate 2 Guardrail · Monroe LA</p>
   </div>
   <div class="hdr-right">
-    <div class="pill pn"><div class="dot dn"></div>Neo4j</div>
-    <div class="pill pc"><div class="dot dc"></div>Pinecone</div>
-    <div class="pill pg"><div class="dot dg"></div>Gate 2</div>
+    <div class="hpills">
+      <span class="pill pn"><span class="dot dn"></span>Neo4j</span>
+      <span class="pill pc"><span class="dot dc"></span>Pinecone</span>
+      <span class="pill pg"><span class="dot dg"></span>Gate 2</span>
+    </div>
     <button class="signin-btn" id="signinBtn" onclick="handleSignIn()">
       <span id="signinLabel">🔑 Sign In</span>
     </button>
     <button class="cart-btn" onclick="openCart()">
-      🛒 Cart
-      <span class="cart-badge" id="cartBadge">0</span>
+      🛒 Cart <span class="cart-badge" id="cartBadge">0</span>
     </button>
   </div>
-</div>
+</header>
 
-<div class="sbar warn" id="sbar">Checking Neo4j and Pinecone...</div>
+<div class="sbar warn" id="sbar">Connecting to Cloudflare Worker...</div>
 
-<div class="kbar" id="kbar" style="display:none">
-  <label>Anthropic Key:</label>
-  <input type="password" id="keyIn" placeholder="sk-ant-api03-..." />
-  <button class="kbtn" onclick="connectKey()">Connect</button>
-  <span style="font-size:10px;color:#999">RAM only</span>
-</div>
-
+<!-- MAIN -->
 <div class="main">
+
+  <!-- LEFT TABS -->
   <div class="tabs-wrap">
     <div class="tab-header">
-      <button class="th-btn on" onclick="showTab('questions',this)">Questions</button>
-      <button class="th-btn" onclick="showTab('logs',this)">Logs</button>
-      <button class="th-btn" onclick="showTab('tokens',this)">Tokens</button>
+      <button class="th-btn on" onclick="showTab('codepath', this)">Code Path</button>
+      <button class="th-btn" onclick="showTab('logs', this)">Logs</button>
+      <button class="th-btn" onclick="showTab('tokens', this)">Tokens</button>
     </div>
 
-    <div class="tab-pane on" id="tab-questions">
-      <div class="sb-title">Neo4j — exact facts</div>
-      <button class="qbtn" onclick="ask('who are your waiters')"><span class="qt">Who are your waiters?</span><span class="qs">Staff WORKS_AT</span></button>
-      <button class="qbtn" onclick="ask('what time do you open')"><span class="qt">Opening hours?</span><span class="qs">Timing OPERATES_AT</span></button>
-      <button class="qbtn" onclick="ask('do you have buffet')"><span class="qt">Do you have buffet?</span><span class="qs">Timing buffetNote</span></button>
-      <button class="qbtn" onclick="ask('any allergen warnings')"><span class="qt">Allergen warnings?</span><span class="qs">Allergen + Gate 2</span></button>
-      <button class="qbtn" onclick="ask('chicken tikka masala')"><span class="qt">Chicken tikka masala</span><span class="qs">Dish lookup</span></button>
-      <button class="qbtn" onclick="ask('what pairs with butter chicken')"><span class="qt">Pairs with butter chicken?</span><span class="qs">PAIRS_WELL_WITH</span></button>
-      <button class="qbtn" onclick="ask('what biryani do you have')"><span class="qt">Biryani options?</span><span class="qs">Category INCLUDES</span></button>
-      <button class="qbtn" onclick="ask('what vegetarian dishes')"><span class="qt">Vegetarian dishes?</span><span class="qs">isVeg=true</span></button>
-      <button class="qbtn" onclick="ask('do you have beef')"><span class="qt">Do you have beef?</span><span class="qs">Beef guard</span></button>
-      <div class="sb-title" style="margin-top:10px">Pinecone — semantic search</div>
-      <button class="qbtn" onclick="ask('something mild and creamy')"><span class="qt">Something mild and creamy</span><span class="qs">Pinecone semantic</span></button>
-      <button class="qbtn" onclick="ask('similar to butter chicken')"><span class="qt">Similar to butter chicken</span><span class="qs">Pinecone — excludes itself</span></button>
-      <button class="qbtn" onclick="ask('something warming and hearty')"><span class="qt">Warming and hearty</span><span class="qs">Pinecone semantic</span></button>
-      <button class="qbtn" onclick="ask('i\'m feeling adventurous')"><span class="qt">Feeling adventurous</span><span class="qs">Pinecone semantic</span></button>
-      <button class="qbtn" onclick="ask('good for kids')"><span class="qt">Good for kids</span><span class="qs">Pinecone semantic</span></button>
-      <button class="qbtn" onclick="ask('something for a date night')"><span class="qt">Date night dish</span><span class="qs">Pinecone semantic</span></button>
-      <button class="qbtn" onclick="ask('i want something like a taco')"><span class="qt">Something like a taco</span><span class="qs">RAG redirect + Pinecone</span></button>
-      <button class="qbtn" onclick="ask('high protein low carb')"><span class="qt">High protein low carb</span><span class="qs">Pinecone semantic</span></button>
-      <button class="qbtn" onclick="ask('something indulgent')"><span class="qt">Something indulgent</span><span class="qs">Pinecone semantic</span></button>
-      <button class="qbtn" onclick="ask('how is the accommodation')"><span class="qt">Accommodation</span><span class="qs">Pinecone features</span></button>
+    <!-- CODE PATH TAB — replaces the old Questions tab. Shows the static
+         frontend→Worker call map AND the live trace from the last query. -->
+    <div class="tab-pane on" id="tab-codepath">
+      <div class="sb-title">Live Query Trace (last message)</div>
+      <div id="trace-body" class="cp-empty">Ask a question to see the routing trace.</div>
+
+      <div class="sb-title" style="margin-top:16px">Static Code Map</div>
+      <div class="cp-card">
+        <h4>Frontend → Worker</h4>
+        <div class="cp-arrow">send() in index.html<br>↓<br>fetch(WORKER + "/chat")<br>↓<br>handleChat() in worker.js</div>
+      </div>
+      <div class="cp-card">
+        <h4>Pipeline inside handleChat()</h4>
+        <div class="cp-arrow">classifyIntent(rawMessage)<br>↓<br>applySafetyGuards(intent)<br>↓<br>routeByIntent() — dispatches to<br>neo4jFind*/neo4jSearch* functions<br>↓<br>buildVerifiedFactsBlock(dishes)<br>↓<br>callClaudeForFinalWording()<br>↓<br>gate2Validate(reply, facts)<br>↓<br>return {response, trace, ...}</div>
+      </div>
+      <div class="cp-card">
+        <h4>Frontend renders response</h4>
+        <div class="cp-arrow">res.json() in send()<br>↓<br>addBot(reply, tag, scores...)<br>↓<br>renderTrace(data.trace)</div>
+      </div>
     </div>
 
     <div class="tab-pane" id="tab-logs">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <div class="sb-title" style="margin:0">Live query log</div>
-        <button class="clr-btn" onclick="clearLogs()">Clear</button>
-      </div>
       <div id="log-body"><div style="font-size:11px;color:#AAA;text-align:center;padding:20px 0">No queries yet.</div></div>
+      <button class="clr-btn" onclick="clearLogs()">Clear logs</button>
     </div>
 
     <div class="tab-pane" id="tab-tokens">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <div class="sb-title" style="margin:0">Token usage</div>
-        <button class="clr-btn" onclick="clearTokens()">Clear</button>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px">
-        <div class="tok-card"><div class="tok-num" id="tk-in">0</div><div class="tok-label">Input</div></div>
-        <div class="tok-card"><div class="tok-num" id="tk-out">0</div><div class="tok-label">Output</div></div>
-        <div class="tok-card"><div class="tok-num" id="tk-total">0</div><div class="tok-label">Total</div></div>
-        <div class="tok-card"><div class="tok-num" id="tk-q">0</div><div class="tok-label">Queries</div></div>
-      </div>
+      <div class="tok-card"><div class="tok-num" id="tk-in">0</div><div class="tok-label">Input tokens</div></div>
+      <div class="tok-card"><div class="tok-num" id="tk-out">0</div><div class="tok-label">Output tokens</div></div>
+      <div class="tok-card"><div class="tok-num" id="tk-total">0</div><div class="tok-label">Total tokens</div></div>
+      <div class="tok-card"><div class="tok-num" id="tk-q">0</div><div class="tok-label">Questions</div></div>
       <div id="tok-body"><div style="font-size:11px;color:#AAA;text-align:center;padding:10px 0">No queries yet.</div></div>
+      <button class="clr-btn" onclick="clearTokens()">Clear tokens</button>
     </div>
   </div>
 
+  <!-- CHAT -->
   <div class="chat">
-    <div class="messages" id="msgs">
-      <div class="msg bot"><div class="av">🍛</div><div class="bub">
-        <div class="stag t-both">📊 Neo4j + Pinecone</div>
-        <strong>Chef Krish v8</strong> — Neo4j + Pinecone 🙏<br><br>
-        Routing fixed: natural language goes to <strong>Pinecone semantic search</strong>. Exact facts go to <strong>Neo4j</strong>. Beef is blocked. "Similar to X" excludes X from results. Gate 2 guardrail on every reply.<br><br>
-        Add your Anthropic key above and ask anything!
-      </div></div>
-    </div>
+    <div class="messages" id="msgs"></div>
     <div class="ibar">
-      <textarea id="uinput" rows="1" placeholder="Ask Chef Krish anything... or tap the mic 🎤"
-        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();send();}"></textarea>
-      <button class="ibtn" id="micBtn" onclick="toggleVoice()" title="Speak your order" style="background:#25D366;">🎤</button>
+      <button class="ibtn" id="micBtn" onclick="toggleVoice()" style="background:#25D366">🎤</button>
+      <textarea id="uinput" rows="1" placeholder="Ask about our menu, hours, staff, or place an order…"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();send();}"
+        oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
       <button class="ibtn" onclick="send()">➤</button>
     </div>
   </div>
+
 </div>
 
-<script>
-"use strict";
-
-/* ═══════════════════════════════════════════════════════════════
-   MCP-STYLE TOOL REGISTRY  (organizational layer — NOT a real MCP server)
-   ───────────────────────────────────────────────────────────────
-   Real MCP requires a backend server to host tools. This app is
-   browser-only, so this is a *tool registry pattern* that mirrors how
-   MCP organizes and describes tools. The actual execution still uses
-   the existing Neo4j / Pinecone / Claude logic — UNCHANGED.
-
-   Interview framing: "I structured my routing as an MCP-style tool
-   registry to show I understand the pattern. It documents each tool's
-   name, purpose, and when to use it — exactly how an MCP server
-   advertises tools to a model. It is not a live MCP server; that needs
-   a backend, which is my next step."
-   ═══════════════════════════════════════════════════════════════ */
-var MCP_TOOLS = {
-  neo4j_lookup: {
-    name: "neo4j_lookup",
-    description: "Exact structured facts: dish details, prices, staff, timings, allergens, categories.",
-    when: "Use for precise factual queries where the answer is a known database field.",
-    handler: "getGraph"        // existing function — not modified
-  },
-  pinecone_search: {
-    name: "pinecone_search",
-    description: "Semantic similarity search over dish vectors (voyage-3-lite, 512d, cosine).",
-    when: "Use for descriptive / vibe queries: 'something mild', 'similar to butter chicken'.",
-    handler: "pineconeSearch"  // existing function — not modified
-  },
-  claude_generate: {
-    name: "claude_generate",
-    description: "Generates the natural-language reply, grounded ONLY in retrieved context.",
-    when: "Always runs last, after retrieval, to phrase the verified data conversationally.",
-    handler: "callClaude"      // existing function — not modified
-  },
-  gate2_guardrail: {
-    name: "gate2_guardrail",
-    description: "Output check: flags unverified prices/claims before display. Anti-hallucination.",
-    when: "Runs on every reply after generation, before the customer sees it.",
-    handler: "gate2"           // existing function — not modified
-  },
-  add_to_cart: {
-    name: "add_to_cart",
-    description: "Adds a verified dish (from graph context only) to the order cart.",
-    when: "Triggered by order intent or the Add-to-cart button. Never from invented dishes.",
-    handler: "addToCart"       // existing function — not modified
-  },
-  whatsapp_order: {
-    name: "whatsapp_order",
-    description: "Sends the confirmed cart as a formatted WhatsApp order message.",
-    when: "Fires ONLY after explicit customer confirmation.",
-    handler: "sendWhatsApp"    // existing function — not modified
-  }
-};
-// Helper for the Logs tab / demo: shows which tool a route used.
-function mcpLog(toolName, detail) {
-  var t = MCP_TOOLS[toolName];
-  if (t) addLog("mcp:" + toolName, detail || "", "ok", "MCP tool → " + t.description, Date.now());
-}
-
-/* ── VOICE INPUT (Web Speech API — browser native, no backend) ── */
-var _recog = null, _listening = false;
-function toggleVoice() {
-  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) {
-    alert("Voice input is not supported in this browser. Try Chrome or Edge.");
-    return;
-  }
-  if (_listening) { if (_recog) _recog.stop(); return; }
-  _recog = new SR();
-  _recog.lang = "en-US";
-  _recog.interimResults = false;
-  _recog.maxAlternatives = 1;
-  var mic = document.getElementById("micBtn");
-  _recog.onstart = function() { _listening = true; mic.textContent = "🔴"; mic.style.background = "#EF4444"; };
-  _recog.onend   = function() { _listening = false; mic.textContent = "🎤"; mic.style.background = "#25D366"; };
-  _recog.onerror = function(e) { _listening = false; mic.textContent = "🎤"; mic.style.background = "#25D366"; };
-  _recog.onresult = function(ev) {
-    var transcript = ev.results[0][0].transcript;
-    var inp = document.getElementById("uinput");
-    inp.value = transcript;
-    // If it sounds like an order, route to the order-confirm flow; else normal send
-    if (ORDER_RE.test(transcript)) {
-      handleVoiceOrder(transcript);
-    } else {
-      send();
-    }
-  };
-  _recog.start();
-}
-
-/* ── VOICE ORDER → CONFIRM → WHATSAPP FLOW ──
-   Adds verified dishes to cart, then asks for confirmation.
-   Does NOT auto-send. WhatsApp fires only on explicit confirm click. */
-async function handleVoiceOrder(transcript) {
-  document.getElementById("uinput").value = "";
-  addUser("🎤 " + transcript);
-  showTyping();
-  mcpLog("pinecone_search", transcript);
-  // Reuse existing retrieval — find the dish via the same pipeline
-  var routeResult = await getGraph(transcript);
-  var graphText = routeResult.text;
-  var matchedDishes = [];
-  if (routeResult.toPin || !graphText) {
-    try {
-      var matches = await pineconeSearch(transcript, 5, "dish", null);
-      if (matches.length) graphText = buildSemanticText(matches);
-    } catch(e) {}
-  }
-  var verified = extractDishesFromContext(graphText || "");
-  removeTyping();
-  if (!verified.length) {
-    addBot("I heard \"" + transcript + "\" but couldn't match it to a specific dish on our menu. Could you try again, or browse the menu suggestions on the left? 🙏", "t-cla", null, [], "voice-no-match", []);
-    return;
-  }
-  // Add the top matched dish to cart
-  mcpLog("add_to_cart", verified[0].name);
-  addToCart(verified[0].name, verified[0].price);
-  // Ask for confirmation — do NOT send yet
-  var confirmHtml = "Got it! I've added <strong>" + verified[0].name + " ($" + verified[0].price.toFixed(2) + ")</strong> to your cart. 🛒<br><br>Shall I confirm your order and send it via WhatsApp?<br><br>" +
-    "<button class='add-cart-btn' style='background:#25D366' onclick='confirmVoiceOrder()'>✅ Yes, confirm my order</button> " +
-    "<button class='add-cart-btn' style='background:#888' onclick='openCart()'>🛒 View cart first</button>";
-  addBot(confirmHtml, "t-both", {c:95,h:5}, ["MCP: add_to_cart → awaiting confirmation"], "order-confirm", []);
-}
-
-function confirmVoiceOrder() {
-  mcpLog("whatsapp_order", "confirmed via voice");
-  addBot("Perfect! 🎉 Sending your order now...<br><br>🕐 <strong>Your order will be ready in 30 minutes.</strong><br>Just pick it up and pay at the counter. Thank you! 🙏", "t-both", {c:99,h:1}, ["MCP: whatsapp_order → confirmed"], "order-confirmed", []);
-  sendWhatsApp(); // existing function — unchanged
-}
-
-// ── SHUFFLE HELPER — randomise array in place ──────────
-function shuffle(arr) {
-  var a = arr.slice();
-  for (var i = a.length - 1; i > 0; i--) {
-    var j = Math.floor(Math.random() * (i + 1));
-    var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
-  }
-  return a;
-}
-// ── CONSTANTS ─────────────────────────────────────────
-// V8: All secrets live in Cloudflare Worker — never in browser
-const WORKER  = "https://chef-krish-backend.boddedahimateja.workers.dev";
-const N4J     = "https://9b0f64b5-graphql.production-orch-0336.neo4j.io/graphql";
-const NK      = "d16v0PBfQhJqLwunefWZuYe9rVhqQusk";
-const PIN_HOST= "https://chef-krish-index-82tibs6.svc.aped-4627-b74a.pinecone.io";
-const PIN_KEY = "pcsk_cBjcj_DJNFH8AvceY5Qqs1i4qPBVbC9PjWHxcCnMbDSyUmEQqj7FaRHKCxLkkWRzm9quH";
-const VOY_KEY = "pa-oxJu0meTte3gSxdIBA5oNrJAvW8L83oyDhm5BDDH6ES";
-
-let AK = "", hist = [], n4jLive = false, pineconeReady = false;
-let totalIn = 0, totalOut = 0, totalQ = 0;
-const logs = [], tokHistory = [], embedCache = {};
-
-// ── CACHE LAYER ───────────────────────────────────────
-const CACHE_PREFIX = "ck_v7_";
-const CACHE_TTL_MS = 30 * 60 * 1000; // 30 minutes
-// Queries that must NEVER be cached (safety-critical or time-sensitive)
-const CACHE_NEVER_RE = /\b(allerg|nut|peanut|dairy|gluten|shellfish|lactose|vegan|available tonight|today.?s special|open now|hours today)\b/i;
-
-function getCached(query) {
-  if (CACHE_NEVER_RE.test(query)) return null; // never serve cached allergen/availability answers
-  try {
-    const key = CACHE_PREFIX + query.trim().toLowerCase();
-    const raw = sessionStorage.getItem(key);
-    if (!raw) return null;
-    const obj = JSON.parse(raw);
-    if (Date.now() - obj.ts > CACHE_TTL_MS) { sessionStorage.removeItem(key); return null; }
-    return obj;
-  } catch(e) { return null; }
-}
-
-function setCache(query, reply, tag, scores, rels, intent, gateWarnings) {
-  if (CACHE_NEVER_RE.test(query)) return; // never cache allergen/availability
-  try {
-    const key = CACHE_PREFIX + query.trim().toLowerCase();
-    sessionStorage.setItem(key, JSON.stringify({ reply:reply, tag:tag, scores:scores, rels:rels, intent:intent, gateWarnings:gateWarnings, ts:Date.now() }));
-  } catch(e) {} // storage full — silently skip
-}
-
-// ── GOOGLE SHEETS ORDER LOGGER ────────────────────────
-const SHEETS_URL = "https://script.google.com/macros/s/AKfycbwDe53MBGKcPOJa0IDxN78gFy9Z-7ClxGAMZd2iImQWrRdu1AGD3_xk7SlEwnZPPZZlpw/exec";
-const SESSION_ID = "sess_" + Math.random().toString(36).slice(2, 9);
-const ORDER_RE = /\b(order|want|i.?ll (have|get|take)|give me|can i (get|have)|i.?d like|i want|add to|get me)\b/i;
-
-async function logOrder(customerMessage, dishName, price) {
-  if (!SHEETS_URL || SHEETS_URL.includes("YOUR_GOOGLE")) return; // skip until URL is set
-  try {
-    await fetch(SHEETS_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        sessionId: SESSION_ID,
-        customerMessage: customerMessage,
-        dishDetected: dishName || "unknown",
-        price: price || "",
-        timestamp: new Date().toISOString()
-      })
-    });
-  } catch(e) {
-    // never block the user experience for a logging failure — silent fail
-    addLog("sheets", customerMessage, "err", "Order log failed: " + e.message, Date.now());
-  }
-}
-
-// ── NON-INDIAN FOOD PATTERN (checked first in send) ──
-// These must NEVER go to must-try or any Neo4j route
-const NON_INDIAN_RE = /\b(pizza|burger|sushi|taco|pasta|sandwich|hot dog|french fry|steak|bbq|fried chicken|kebab|shawarma|gyro|burrito|quesadilla|noodle|ramen|pho|chinese food|mexican|thai|japanese|italian|alligator|crocodile|lobster roll|fish and chips|fish and chip|clam chowder|crab cake|oyster|crawfish|catfish|gumbo|jambalaya|po.?boy|beignet|waffle|pancake|bacon|ham|pork chop|ribs|brisket|pulled pork|hotdog|wings|nugget|submarine|sub sandwich|wrap|quesadilla|nachos|salsa|guacamole|enchilada|fajita|tamale)\b/i;
-
-// ── DESCRIPTIVE QUERY PATTERN → goes straight to Pinecone ──
-// These are natural language queries with NO exact keyword match
-const DESCRIPTIVE_RE = /\b(adventurous|romantic|celebratory|cosy|cozy|warming|hearty|indulgent|filling|light meal|light for|bold flavour|bold flavor|comfort food|not very hungry|sharing|family style|first time|high protein|low carb|keto|low calorie|without onion|without garlic|jain|diabetic|date night|business lunch|good for kids|kids|special occasion|anniversary|birthday|similar to|something like|alternative to|instead of|reminds me|close to|taste like|creamy chicken|spicy chicken|smoky|aromatic chicken|buttery|tender meat|hearty dish|warm dish|rich curry|rich dish|velvety|mild curry|gentle spice|not too hot|not too spicy|feeling adventurous|something new|surprise me|what would you recommend|help me choose)\b/i;
-
-// ── SIMILARITY PATTERN ─────────────────────────────────
-const SIMILARITY_RE = /\b(similar to|something like|close to|alternative to|instead of|not .{0,20} but|reminds me of|taste like|flavor like|flavour like)\b/i;
-
-// Dish names list for exact lookup
-const DISH_NAMES = [
-  "butter chicken","chicken tikka masala","chicken tikka","chicken vindaloo",
-  "chicken dum biryani","andhra chicken","chicken karahi","chicken korma",
-  "chicken curry","chicken jalfrezi","chicken kadai","chicken 65",
-  "chicken chettinad","chicken malabar","chicken biriyani",
-  "prawn masala","prawn curry","prawn korma","prawn biriyani",
-  "fish curry","fish korma","seafood biryani","seafood biriyani",
-  "shrimp masala","shrimp curry","shrimp pakora","shrimp 65","shrimp biriyani",
-  "lamb rogan josh","lamb biryani","lamb biriyani","lamb korma","lamb vindaloo",
-  "lamb makhani","lamb curry","lamb karahi",
-  "goat curry","goat biriyani","goat korma","goat masala",
-  "palak paneer","paneer tikka masala","paneer tikka","paneer butter masala",
-  "paneer korma","paneer jalfrezi","paneer kadai","shahi paneer",
-  "chana masala","dal makhani","dal fry","dal tadka",
-  "aloo gobi","aloo mutter","saag paneer","navaratan kurma","mix veg",
-  "garlic naan","butter naan","plain naan","cheese naan","keema naan","bullet naan",
-  "masala dosa","plain dosa","onion dosa","rava dosa",
-  "mango lassi","sweet lassi","salt lassi",
-  "sugarcane juice","chai tea","masala chai",
-  "veg samosa","chicken samosa","samosa","samosa chat",
-  "veg pakora","paneer pakora","chicken pakora",
-  "gulab jamun","kheer","halwa","kulfi",
-  "tandoori chicken","tandoori shrimp","tandoori paneer",
-  "veg biryani","vegetable biryani","chicken dum biryani",
-  "gobi manchuria","veg manchuria","paneer manchuria",
-  "raita","papadum","basmati rice"
-];
-
-// ── STARTUP ───────────────────────────────────────────
-async function checkN4j() {
-  const bar = document.getElementById("sbar");
-  bar.className = "sbar warn";
-  bar.textContent = "Connecting to Cloudflare Worker...";
-  try {
-    const r = await fetch(WORKER + "/health");
-    if (!r.ok) throw new Error("HTTP " + r.status);
-    const data = await r.json();
-    n4jLive = !!(data.neo4j && data.neo4j.read);
-    pineconeReady = !!(data.pinecone && data.pinecone.ok);
-    const dishes = data.neo4j?.counts?.dishes_total ?? "?";
-    const vecs   = data.pinecone?.totalVectors ?? "?";
-    if (n4jLive) {
-      bar.className = "sbar ok";
-      bar.textContent = "Worker LIVE · Neo4j " + dishes + " dishes · Pinecone " + vecs + " vectors · Gate 2 ON · No key needed in browser";
-      addLog("startup", "health", "ok", "Worker healthy · Neo4j:" + n4jLive + " · Pinecone:" + pineconeReady, Date.now());
-    } else {
-      bar.className = "sbar warn";
-      bar.textContent = "Worker UP but Neo4j read failed — " + (data.neo4j?.error || "check /health");
-      addLog("startup", "health", "warn", "Neo4j read: false · " + (data.neo4j?.error || "unknown"), Date.now());
-    }
-  } catch(e) {
-    bar.className = "sbar err";
-    bar.textContent = "Worker unreachable: " + e.message;
-    addLog("startup", "health", "err", e.message, Date.now());
-  }
-}
-
-
-async function checkPinecone() {
-  try {
-    const r = await fetch(PIN_HOST + "/describe_index_stats", {
-      method:"POST", headers:{"Content-Type":"application/json","Api-Key":PIN_KEY},
-      body: JSON.stringify({}) });
-    if (r.ok) {
-      const j = await r.json();
-      const n = (j.namespaces && j.namespaces["chef-krish"] && j.namespaces["chef-krish"].vectorCount) || j.totalVectorCount || 0;
-      if (n > 0) { pineconeReady = true; addLog("pinecone","stats","pin", n + " vectors", Date.now()); return n; }
-    }
-  } catch(e) {}
-  // Fallback: we know 254 vectors were stored
-  pineconeReady = true;
-  addLog("pinecone","assumed ready","pin","254 vectors confirmed stored", Date.now());
-  return 254;
-}
-
-function connectKey() {
-  // No-op: Anthropic key is in Cloudflare Worker encrypted secrets
-  document.getElementById("kbar").style.display = "none";
-  return;
-
-  const v = document.getElementById("keyIn").value.trim();
-  if (!v.startsWith("sk-ant")) { alert("Enter a valid Anthropic key starting with sk-ant"); return; }
-  AK = v;
-  const bar = document.getElementById("kbar");
-  bar.style.background = "linear-gradient(135deg,#ECFDF5,#F0FDF4)";
-  bar.style.borderBottomColor = "#6EE7B7";
-  bar.querySelector(".kbtn").textContent = "Connected";
-  bar.querySelector(".kbtn").style.background = "#059669";
-  addBot("Claude connected! " + (n4jLive ? "Both Neo4j and Pinecone are live." : "Open from GitHub Pages for graph data."), "t-cla", null, [], null, []);
-}
-
-// ── NEO4J QUERY ───────────────────────────────────────
-async function q4j(gql, label) {
-  const t0 = Date.now();
-  try {
-    const r = await fetch(N4J, { method:"POST", mode:"cors",
-      headers:{"Content-Type":"application/json","x-api-key":NK},
-      body: JSON.stringify({query: gql}) });
-    const j = await r.json();
-    const ms = Date.now() - t0;
-    if (j.errors) {
-      addLog(label, gql, "err", j.errors[0].message, t0, ms);
-      throw new Error(j.errors[0].message);
-    }
-    const count = Object.values(j.data || {}).reduce(function(s,v){ return s + (Array.isArray(v) ? v.length : 1); }, 0);
-    addLog(label, gql, "ok", count + " nodes · " + ms + "ms", t0, ms, j.data);
-    return j.data || {};
-  } catch(e) {
-    if (!e.message.match(/\d+ nodes/)) addLog(label, gql, "err", e.message, Date.now() - t0);
-    return {};
-  }
-}
-
-// ── VOYAGE AI EMBED ───────────────────────────────────
-async function embedQuery(question) {
-  if (embedCache[question]) return embedCache[question];
-  for (let attempt = 0; attempt < 4; attempt++) {
-    try {
-      const r = await fetch("https://api.voyageai.com/v1/embeddings", {
-        method:"POST",
-        headers:{"Content-Type":"application/json","Authorization":"Bearer " + VOY_KEY},
-        body: JSON.stringify({model:"voyage-3-lite", input:[question], input_type:"query"}) });
-      if (r.status === 429) { await sleep((attempt + 1) * 25000); continue; }
-      if (!r.ok) throw new Error("Voyage " + r.status);
-      const j = await r.json();
-      if (j.error) throw new Error(j.error.message);
-      const vec = j.data[0].embedding;
-      embedCache[question] = vec;
-      return vec;
-    } catch(e) {
-      if (e.message.includes("429") || e.message.includes("rate")) { await sleep((attempt + 1) * 25000); continue; }
-      addLog("voyage", question, "err", e.message, Date.now());
-      return null;
-    }
-  }
-  return null;
-}
-
-function sleep(ms) { return new Promise(function(r){ setTimeout(r, ms); }); }
-
-// ── PINECONE SEARCH ───────────────────────────────────
-async function pineconeSearch(question, topK, typeFilter, excludeName) {
-  const vec = await embedQuery(question);
-  if (!vec) return [];
-  try {
-    const body = { vector:vec, topK: topK || 7, includeMetadata:true, namespace:"chef-krish" };
-    if (typeFilter) body.filter = { type:{ "$eq": typeFilter } };
-    const r = await fetch(PIN_HOST + "/query", {
-      method:"POST",
-      headers:{"Content-Type":"application/json","Api-Key":PIN_KEY},
-      body: JSON.stringify(body) });
-    if (!r.ok) throw new Error("Pinecone query " + r.status);
-    const j = await r.json();
-    let matches = j.matches || [];
-    // FIX: exclude the named dish when doing similarity search
-    if (excludeName) {
-      const ex = excludeName.toLowerCase();
-      matches = matches.filter(function(m){ return (m.metadata.name || "").toLowerCase() !== ex; });
-    }
-    // Lower threshold to 0.40 — voyage-3-lite scores tend to be lower range
-    const good = matches.filter(function(m){ return m.score >= 0.40; });
-    addLog("pinecone", question, "pin",
-      good.length + " matches (threshold 0.40) · top: " +
-      (good[0] ? good[0].metadata.name + " " + good[0].score.toFixed(3) : "none"), Date.now());
-    return good;
-  } catch(e) {
-    addLog("pinecone", question, "err", e.message, Date.now());
-    return [];
-  }
-}
-
-// ── BUILD SEMANTIC CONTEXT TEXT ───────────────────────
-function buildSemanticText(matches) {
-  if (!matches.length) return "";
-  const type = matches[0].metadata.type;
-  if (type === "dish") {
-    const list = matches.map(function(m){
-      return m.metadata.name +
-        " ($" + (m.metadata.price || "?") + ", " +
-        (m.metadata.spiceLevel || "Medium") + " spice" +
-        (m.metadata.isVeg === "true" ? " vegetarian" : "") +
-        (m.metadata.mustTry === "true" ? " chef-recommended" : "") + ")";
-    }).join(", ");
-    return "VERIFIED DISH MATCHES FROM MENU — RECOMMEND ONLY THESE, DO NOT INVENT ANY OTHER DISH: " + list;
-  }
-  if (type === "staff") {
-    return "STAFF: " + matches.map(function(m){ return m.metadata.name + " (" + m.metadata.role + (m.metadata.expertise ? ", " + m.metadata.expertise : "") + ")"; }).join(", ");
-  }
-  if (type === "feature") {
-    return "RESTAURANT FEATURES: " + matches.map(function(m){ return m.metadata.property + ": " + m.metadata.value; }).join(" | ");
-  }
-  return "MENU DATA: " + matches.map(function(m){ return m.metadata.name; }).join(", ");
-}
-
-// ── MAIN ROUTER ───────────────────────────────────────
-// Decision tree:
-// 1. Beef guard → instant block
-// 2. Non-Indian food (pizza/taco/burger) → RAG redirect (fetch real dishes, suggest politely)
-// 3. Descriptive/natural language → Pinecone DIRECTLY
-// 4. Similarity intent ("similar to X") → Pinecone EXCLUDING X
-// 5. Specific dish name → Neo4j exact lookup
-// 6. Pairing intent → Neo4j PAIRS_WELL_WITH
-// 7. Category/feature/staff/hours intents → Neo4j
-// 8. No match → Pinecone semantic fallback
-async function getGraph(msg) {
-  const m = msg.toLowerCase();
-
-  // Step A — detect longest matching dish name
-  const matchedDish = DISH_NAMES
-    .filter(function(d){ return m.includes(d); })
-    .sort(function(a,b){ return b.length - a.length; })[0] || null;
-
-  // ── RULE 1: Non-Indian food redirect ─────────────────
-  // Must run BEFORE any other check
-  if (NON_INDIAN_RE.test(m)) {
-    // Category-matched redirect — different dishes based on what they craved
-    var cravingType = "general";
-    if (/pizza|bread|cheesy|flatbread|garlic bread/i.test(m)) cravingType = "bread";
-    else if (/burger|steak|bbq|ribs|alligator|gator|catfish|gumbo|jambalaya|crawfish|pulled pork|brisket|wings|fried chicken|hot dog/i.test(m)) cravingType = "meat";
-    else if (/sushi|lobster|crab|oyster|clam|fish and chip|seafood/i.test(m)) cravingType = "seafood";
-    else if (/ramen|noodle|pho|chinese|japanese|thai|taco|burrito|wrap/i.test(m)) cravingType = "light";
-    else if (/waffle|pancake|dessert|sweet|beignet|cake/i.test(m)) cravingType = "sweet";
-
-    var altText = "";
-    if (cravingType === "bread") {
-      var d1 = await q4j('{ dishes(where:{name:{contains:"Naan"}}){ name price desc } }', "redirect-naan");
-      var d2 = await q4j('{ dishes(where:{name:{contains:"Paratha"}}){ name price desc } }', "redirect-paratha");
-      var all1 = shuffle([].concat(d1.dishes||[], d2.dishes||[]));
-      altText = all1.slice(0,3).map(function(x){ return x.name+" ($"+x.price+")"; }).join(", ");
-    } else if (cravingType === "meat") {
-      var d1 = await q4j('{ dishes(where:{name:{contains:"Chicken"}}){ name price spiceLevel desc } }', "redirect-chicken");
-      var d2 = await q4j('{ dishes(where:{name:{contains:"Lamb"}}){ name price desc } }', "redirect-lamb");
-      var all1 = shuffle([].concat(d1.dishes||[], d2.dishes||[]));
-      altText = all1.slice(0,3).map(function(x){ return x.name+" ($"+x.price+")"; }).join(", ");
-    } else if (cravingType === "seafood") {
-      var d1 = await q4j('{ dishes(where:{name:{contains:"Prawn"}}){ name price desc } }', "redirect-prawn");
-      var d2 = await q4j('{ dishes(where:{name:{contains:"Shrimp"}}){ name price desc } }', "redirect-shrimp");
-      var all1 = shuffle([].concat(d1.dishes||[], d2.dishes||[]));
-      altText = all1.slice(0,3).map(function(x){ return x.name+" ($"+x.price+")"; }).join(", ");
-    } else if (cravingType === "light") {
-      var d = await q4j('{ categories(where:{name:{eq:"Dosa & South Indian"}}){ includesDishes { name price } } }', "redirect-dosa");
-      var items = (d.categories && d.categories[0] && d.categories[0].includesDishes) || [];
-      altText = shuffle(items).slice(0,3).map(function(x){ return x.name+" ($"+x.price+")"; }).join(", ");
-    } else if (cravingType === "sweet") {
-      var d = await q4j('{ categories(where:{name:{eq:"Dessert"}}){ includesDishes { name price } } }', "redirect-dessert");
-      var items = (d.categories && d.categories[0] && d.categories[0].includesDishes) || [];
-      altText = shuffle(items).slice(0,4).map(function(x){ return x.name+" ($"+x.price+")"; }).join(", ");
-    } else {
-      var d = await q4j('{ dishes(where:{mustTry:{eq:"true"}}){ name price isVeg spiceLevel } }', "redirect-general");
-      var all = d.dishes || [];
-      var vegMild  = all.find(function(x){ return x.isVeg==="true" && x.spiceLevel==="Mild"; });
-      var nonVeg   = all.find(function(x){ return x.isVeg==="false" && x.spiceLevel==="Medium"; });
-      var biriyani = all.find(function(x){ return /biriyani|biryani/i.test(x.name); });
-      var bread    = all.find(function(x){ return /naan|dosa|bread/i.test(x.name); });
-      var picks    = [vegMild, nonVeg, biriyani, bread].filter(Boolean).slice(0,4);
-      if (!picks.length) picks = all.slice(0,4);
-      altText = shuffle(picks).map(function(x){ return x.name+" ($"+x.price+")"; }).join(", ");
-    }
-    var matchedNonIndian = (m.match(NON_INDIAN_RE) || ["that"])[0];
-    return {
-      text: "MENU_REDIRECT: We are a 100% authentic Indian restaurant — no "+matchedNonIndian+" on our menu. Suggest these SPECIFIC Indian alternatives to match their craving ("+cravingType+"): "+altText,
-      rels: ["Neo4j — category-matched redirect ("+cravingType+")"],
-      conf: 99, intent: "non-indian redirect ("+cravingType+")", toPin: false, excludeDish: null
-    };
-  }
-
-  // ── RULE 1B: EXACT STAFF/OPERATIONAL QUERIES — run before DESCRIPTIVE check ──
-  // These must always hit Neo4j regardless of any pattern matching
-  if (/\b(waiters?|waitress|servers?|serving staff|who serves|front of house)\b/i.test(m)) {
-    const d = await q4j('{ staff(where:{role:{eq:"Waiter"}}){ name role expertise } }', "waiters");
-    if (d.staff && d.staff.length) return { text:"WAITERS: " + d.staff.map(function(s){ return s.name + (s.expertise ? " — " + s.expertise : ""); }).join(", "), rels:["Staff -[WORKS_AT]-> Restaurant"], conf:98, intent:"waiters", toPin:false, excludeDish:null };
-  }
-  if (/\b(managers?|who manages?|in charge|owner)\b/i.test(m)) {
-    const d = await q4j('{ staff(where:{role:{eq:"Manager"}}){ name role } }', "manager");
-    if (d.staff && d.staff.length) return { text:"MANAGER: " + d.staff.map(function(s){ return s.name; }).join(", "), rels:["Staff -[WORKS_AT]-> Restaurant"], conf:97, intent:"manager", toPin:false, excludeDish:null };
-  }
-  if (/\b(head chef|chief chef|who is the chef|who is chef|kitchen team|sous chef|side chef|who cooks)\b/i.test(m) && !/chicken/i.test(m)) {
-    const d = await q4j('{ staff(where:{role:{in:["Chief Chef","Head Chef","Side Chef","Sous Chef"]}}){ name role expertise } }', "chef");
-    if (d.staff && d.staff.length) return { text:"KITCHEN TEAM: " + d.staff.map(function(s){ return s.name + " (" + s.role + (s.expertise ? ", " + s.expertise : "") + ")"; }).join(" | "), rels:["Staff -[WORKS_AT]-> Restaurant"], conf:97, intent:"kitchen team", toPin:false, excludeDish:null };
-  }
-  if (/\b(all staff|full team|your team|who works? here|all employees?|meet the team)\b/i.test(m)) {
-    const d = await q4j("{ staff { name role expertise } }", "all-staff");
-    if (d.staff && d.staff.length) return { text:"ALL STAFF: " + d.staff.map(function(s){ return s.name + " (" + s.role + ")"; }).join(", "), rels:["Staff -[WORKS_AT]-> Restaurant"], conf:97, intent:"all staff", toPin:false, excludeDish:null };
-  }
-  if (/\b(buffet|all you can eat)\b/i.test(m)) {
-    const d = await q4j("{ timings { buffetAvailable buffetHours buffetDays buffetNote closedOn } }", "buffet");
-    if (d.timings && d.timings.length) { const t = d.timings[0]; return { text:"BUFFET: " + (t.buffetNote||"Available") + " Hours: " + (t.buffetHours||"11AM-2PM") + ". Days: " + (t.buffetDays||"Tue-Sun") + ". Closed: " + (t.closedOn||"Monday") + ".", rels:["Timing node: buffetNote"], conf:99, intent:"buffet", toPin:false, excludeDish:null }; }
-  }
-  if (/\b(open|close|hours?|timing|what time|when do you|monday|tuesday|sunday|reservation|book a table)\b/i.test(m)) {
-    const d = await q4j("{ timings { fullSummary lunchHours dinnerHours closedOn closedMessage timezone buffetHours buffetNote } }", "hours");
-    if (d.timings && d.timings.length) { const t = d.timings[0]; return { text:"HOURS: " + (t.fullSummary||"") + " Closed: " + (t.closedOn||"Monday") + ". " + (t.closedMessage||"") + " Buffet: " + (t.buffetNote||t.buffetHours||"Tue-Sun 11AM-2PM") + ".", rels:["Restaurant -[OPERATES_AT]-> Timing"], conf:99, intent:"hours", toPin:false, excludeDish:null }; }
-  }
-  if (/\b(allerg|dairy|gluten|shellfish|nut |peanut|lactose|safe to eat|intoleran|food sensitiv)\b/i.test(m)) {
-    const d = await q4j("{ allergens { name severity commonIn } }", "allergens");
-    if (d.allergens && d.allergens.length) return { text:"ALLERGENS DISCLOSED: " + d.allergens.map(function(a){ return a.name + " (" + a.severity + ") — common in: " + a.commonIn; }).join(" | "), rels:["AboutUs -[DISCLOSES_ALLERGEN]-> Allergen"], conf:97, intent:"allergens", toPin:false, excludeDish:null };
-  }
-  if (/\b(sides?|accompaniment|raita|papadum|papad|chutney)\b/i.test(m)) {
-    const d = await q4j('{ categories(where:{name:{eq:"Sides"}}){ name includesDishes { name price } } }', "sides");
-    if (d.categories && d.categories.length && d.categories[0].includesDishes && d.categories[0].includesDishes.length) return { text:"SIDES: " + d.categories[0].includesDishes.map(function(x){ return x.name + " ($" + x.price + ")"; }).join(", "), rels:["Category(Sides) -[INCLUDES]-> Dish"], conf:96, intent:"sides", toPin:false, excludeDish:null };
-  }
-  if (/\b(drinks?|beverages?|juices?|lassi|chai|tea|coffee|soda|sugarcane|cold drink)\b/i.test(m)) {
-    const d = await q4j('{ dishes(where:{isBeverage:{eq:"true"}}){ name price } }', "beverages");
-    if (d.dishes && d.dishes.length) return { text:"DRINKS & BEVERAGES: " + d.dishes.map(function(x){ return x.name + " ($" + x.price + ")"; }).join(", "), rels:["Dish: isBeverage=true"], conf:97, intent:"beverages", toPin:false, excludeDish:null };
-  }
-  if (/\b(vegans?)\b/i.test(m)) {
-    const d = await q4j('{ dishes(where:{isVegan:{eq:"true"}}){ name price spiceLevel } }', "vegan");
-    if (d.dishes && d.dishes.length) return { text:"VEGAN DISHES: " + d.dishes.map(function(x){ return x.name + " ($" + x.price + ")"; }).join(", "), rels:["Dish: isVegan=true"], conf:96, intent:"vegan", toPin:false, excludeDish:null };
-  }
-  if (/\b(vegetarians?|veg dish|no meat|plant based|meatless)\b/i.test(m)) {
-    const d = await q4j('{ dishes(where:{isVeg:{eq:"true"}}){ name price spiceLevel mustTry } }', "vegetarian");
-    if (d.dishes && d.dishes.length) { const must = d.dishes.filter(function(x){ return x.mustTry === "true"; }); const show = must.length ? must : d.dishes; return { text:"VEGETARIAN DISHES (" + d.dishes.length + " total): " + show.slice(0,10).map(function(x){ return x.name + " ($" + x.price + ")"; }).join(", "), rels:["Dish: isVeg=true"], conf:95, intent:"vegetarian", toPin:false, excludeDish:null }; }
-  }
-  if (/\b(must.?try|best dish|popular dish|signature dish|chef.?special|what to order|what should i order|famous dish|recommend)\b/i.test(m)) {
-    const d = await q4j('{ dishes(where:{mustTry:{eq:"true"}}){ name price isVeg spiceLevel } }', "must-try");
-    if (d.dishes && d.dishes.length) return { text:"MUST-TRY DISHES: " + d.dishes.slice(0,8).map(function(x){ return x.name + " ($" + x.price + (x.isVeg === "true" ? " veg" : "") + ")"; }).join(", "), rels:["Dish: mustTry=true"], conf:95, intent:"must-try", toPin:false, excludeDish:null };
-  }
-  if (/\b(biryani|biriyani)\b/i.test(m)) {
-    const d = await q4j('{ categories(where:{name:{eq:"Biriyani"}}){ name includesDishes { name price } } }', "biryani");
-    if (d.categories && d.categories.length && d.categories[0].includesDishes && d.categories[0].includesDishes.length) return { text:"BIRYANI OPTIONS: " + d.categories[0].includesDishes.map(function(x){ return x.name + " ($" + x.price + ")"; }).join(", "), rels:["Category(Biriyani) -[INCLUDES]-> Dish"], conf:97, intent:"biryani", toPin:false, excludeDish:null };
-  }
-  if (/\b(interior|accommodation|ambiance|ambience|decor|seating|atmosphere|vibe|inside|ganesha|mandir|pooja|lighting)\b/i.test(m)) {
-    const d = await q4j("{ restaurantFeatures { property value type } }", "interior");
-    if (d.restaurantFeatures && d.restaurantFeatures.length) { const interior = d.restaurantFeatures.filter(function(f){ return ["HAS_INTERIOR","HAS_DECOR","HAS_AMBIENCE","HAS_SEATING","HAS_LIGHTING","HAS_AROMA"].includes(f.type); }); const facility = d.restaurantFeatures.filter(function(f){ return f.type === "HAS_FACILITY"; }); const parts = []; if (interior.length) parts.push("INTERIOR: " + interior.map(function(f){ return f.property + ": " + f.value; }).join(" | ")); if (facility.length) parts.push("FACILITIES: " + facility.map(function(f){ return f.property + ": " + f.value; }).join(" | ")); return { text:parts.join("\n"), rels:["Restaurant -[HAS_FEATURE]-> RestaurantFeature"], conf:96, intent:"interior", toPin:false, excludeDish:null }; }
-  }
-
-  // ── RULE 2: Descriptive / natural-language → Pinecone directly ──
-  // No keyword needed — these are always semantic queries
-  if (DESCRIPTIVE_RE.test(m) && !matchedDish) {
-    addLog("router", m, "pin", "Descriptive query detected → Pinecone direct", Date.now());
-    return { text:"", rels:[], conf:0, intent:"descriptive-pinecone", toPin:true, excludeDish:null };
-  }
-
-  // ── RULE 3: Similarity intent with a named dish ──────
-  if (matchedDish && SIMILARITY_RE.test(m)) {
-    addLog("router", m, "pin", "Similarity intent for '" + matchedDish + "' → Pinecone (excluding itself)", Date.now());
-    return { text:"", rels:[], conf:0, intent:"similarity: " + matchedDish, toPin:true, excludeDish:matchedDish };
-  }
-
-  // ── RULE 4: Pairing intent with named dish ───────────
-  const isPairing = /\b(pair|goes with|go with|side for|combine|order with|match|complement|best with|have with|eat with|what with)\b/i.test(m);
-  if (matchedDish && isPairing) {
-    const safe = matchedDish.split(" ").map(function(w){ return w.charAt(0).toUpperCase() + w.slice(1); }).join(" ");
-    const d = await q4j('{ dishes(where:{name:{contains:"' + safe + '"}}){ name price pairsWellWithDishes { name price spiceLevel } } }', "pairing: " + safe);
-    if (d.dishes && d.dishes.length) {
-      const dish = d.dishes[0];
-      if (dish.pairsWellWithDishes && dish.pairsWellWithDishes.length) {
-        return { text:"PAIRS WITH " + dish.name + ": " + dish.pairsWellWithDishes.map(function(p){ return p.name + " ($" + p.price + ")"; }).join(", "),
-          rels:["Dish(" + dish.name + ") -[PAIRS_WELL_WITH]-> Dish"], conf:98, intent:"pairing: " + safe, toPin:false, excludeDish:null };
-      }
-    }
-  }
-
-  // ── RULE 5: Specific dish name lookup ────────────────
-  if (matchedDish && !isPairing) {
-    const safe = matchedDish.split(" ").map(function(w){ return w.charAt(0).toUpperCase() + w.slice(1); }).join(" ");
-    const d = await q4j('{ dishes(where:{name:{contains:"' + safe + '"}}){ name price isVeg spiceLevel mustTry desc pairsWellWithDishes { name price } } }', "dish: " + safe);
-    if (d.dishes && d.dishes.length) {
-      const dish = d.dishes[0];
-      let info = "DISH: " + dish.name + " ($" + dish.price + ", " + (dish.isVeg === "true" ? "Veg" : "Non-Veg") + ", " + dish.spiceLevel + " spice" + (dish.mustTry === "true" ? ", chef-recommended" : "") + "). " + (dish.desc || "");
-      if (dish.pairsWellWithDishes && dish.pairsWellWithDishes.length) info += " | Best with: " + dish.pairsWellWithDishes.map(function(p){ return p.name; }).join(", ");
-      return { text:info, rels:["Dish node · PAIRS_WELL_WITH"], conf:97, intent:"dish: " + safe, toPin:false, excludeDish:null };
-    }
-  }
-
-  // ── RULE 6: Beverages ────────────────────────────────
-  if (/\b(drink|beverage|juice|lassi|chai|tea|coffee|soda|sugarcane|mocktail|cold drink)\b/i.test(m)) {
-    const d = await q4j('{ dishes(where:{isBeverage:{eq:"true"}}){ name price } }', "beverages");
-    if (d.dishes && d.dishes.length) return { text:"DRINKS: " + d.dishes.map(function(x){ return x.name + " ($" + x.price + ")"; }).join(", "), rels:["Dish: isBeverage=true"], conf:97, intent:"beverages", toPin:false, excludeDish:null };
-  }
-
-  // ── RULE 7: Hours / Timing ───────────────────────────
-  if (/\b(hour|open|close|when|monday|timing|what time|reservation|book a table)\b/i.test(m)) {
-    const d = await q4j("{ timings { fullSummary lunchHours dinnerHours closedOn closedMessage timezone buffetHours buffetNote } }", "hours");
-    if (d.timings && d.timings.length) {
-      const t = d.timings[0];
-      return { text:"HOURS: " + t.fullSummary + " Closed: " + t.closedOn + ". " + (t.closedMessage || "") + " Buffet: " + (t.buffetNote || t.buffetHours || "Tue-Sun 11AM-2PM") + ".", rels:["Restaurant -[OPERATES_AT]-> Timing"], conf:99, intent:"hours", toPin:false, excludeDish:null };
-    }
-  }
-
-  // ── RULE 8: Buffet ───────────────────────────────────
-  if (/\b(buffet|all you can eat)\b/i.test(m)) {
-    const d = await q4j("{ timings { buffetAvailable buffetHours buffetDays buffetNote closedOn } }", "buffet");
-    if (d.timings && d.timings.length) {
-      const t = d.timings[0];
-      return { text:"BUFFET: " + (t.buffetNote || "") + " Hours: " + (t.buffetHours || "11AM-2PM") + ". Days: " + (t.buffetDays || "Tue-Sun") + ". Closed: " + t.closedOn + ".", rels:["Timing node: buffetNote"], conf:99, intent:"buffet", toPin:false, excludeDish:null };
-    }
-  }
-
-  // ── RULE 9: Waiters ──────────────────────────────────
-  if (/\b(waiter|waiters|waitress|server|servers|serving staff|who serves|who is serving|front of house|table staff|who will serve)\b/i.test(m)) {
-    const d = await q4j('{ staff(where:{role:{eq:"Waiter"}}){ name role expertise } }', "waiters");
-    if (d.staff && d.staff.length) return { text:"WAITERS: " + d.staff.map(function(s){ return s.name + (s.expertise ? " — " + s.expertise : ""); }).join(", "), rels:["Staff -[WORKS_AT]-> Restaurant"], conf:98, intent:"waiters", toPin:false, excludeDish:null };
-  }
-
-  // ── RULE 10: Chef / kitchen team ─────────────────────
-  if (/\b(head chef|chief chef|who is chef|who is the chef|your chef|kitchen team|sous chef|side chef|who cooks|who is cooking)\b/i.test(m) && !(/chicken/i.test(m))) {
-    const d = await q4j('{ staff(where:{role:{in:["Chief Chef","Head Chef","Side Chef","Sous Chef"]}}){ name role expertise } }', "chef");
-    if (d.staff && d.staff.length) return { text:"KITCHEN TEAM: " + d.staff.map(function(s){ return s.name + " (" + s.role + (s.expertise ? ", " + s.expertise : "") + ")"; }).join(" | "), rels:["Staff -[WORKS_AT]-> Restaurant","Restaurant -[AI_INSPIRED_BY]-> Staff"], conf:97, intent:"kitchen team", toPin:false, excludeDish:null };
-  }
-
-  // ── RULE 11: Manager ─────────────────────────────────
-  if (/\b(manager|who manages|in charge|owner)\b/i.test(m)) {
-    const d = await q4j('{ staff(where:{role:{eq:"Manager"}}){ name role } }', "manager");
-    if (d.staff && d.staff.length) return { text:"MANAGER: " + d.staff.map(function(s){ return s.name; }).join(", "), rels:["Staff -[WORKS_AT]-> Restaurant"], conf:97, intent:"manager", toPin:false, excludeDish:null };
-  }
-
-  // ── RULE 12: Allergens ───────────────────────────────
-  if (/\b(allerg|dairy|gluten|shellfish|nut|peanut|lactose|safe to eat|intoleran|food sensitiv)\b/i.test(m)) {
-    const d = await q4j("{ allergens { name severity commonIn } }", "allergens");
-    if (d.allergens && d.allergens.length) return { text:"ALLERGENS DISCLOSED: " + d.allergens.map(function(a){ return a.name + " (" + a.severity + ") — common in: " + a.commonIn; }).join(" | "), rels:["AboutUs -[DISCLOSES_ALLERGEN]-> Allergen"], conf:97, intent:"allergens", toPin:false, excludeDish:null };
-  }
-
-  // ── RULE 13: Interior / accommodation ────────────────
-  if (/\b(interior|accommodation|ambiance|ambience|decor|seating|atmosphere|vibe|inside|ganesha|mandir|pooja|lighting|how does it look|dining room)\b/i.test(m)) {
-    const d = await q4j("{ restaurantFeatures { property value type } }", "interior");
-    if (d.restaurantFeatures && d.restaurantFeatures.length) {
-      const interior = d.restaurantFeatures.filter(function(f){ return ["HAS_INTERIOR","HAS_DECOR","HAS_AMBIENCE","HAS_SEATING","HAS_LIGHTING","HAS_AROMA"].includes(f.type); });
-      const facility = d.restaurantFeatures.filter(function(f){ return f.type === "HAS_FACILITY"; });
-      const parts = [];
-      if (interior.length) parts.push("INTERIOR: " + interior.map(function(f){ return f.property + ": " + f.value; }).join(" | "));
-      if (facility.length) parts.push("FACILITIES: " + facility.map(function(f){ return f.property + ": " + f.value; }).join(" | "));
-      return { text:parts.join("\n"), rels:["Restaurant -[HAS_FEATURE]-> RestaurantFeature"], conf:96, intent:"interior", toPin:false, excludeDish:null };
-    }
-  }
-
-  // ── RULE 14: Exact category queries ──────────────────
-  if (/\b(biryani|biriyani)\b/i.test(m)) {
-    const d = await q4j('{ categories(where:{name:{eq:"Biriyani"}}){ name includesDishes { name price } } }', "biryani");
-    if (d.categories && d.categories.length && d.categories[0].includesDishes && d.categories[0].includesDishes.length) {
-      const dishList = d.categories[0].includesDishes.map(function(x){ return x.name + " ($" + x.price + ")"; }).join(", ");
-      return { text:"BIRYANI OPTIONS ON OUR MENU (list ALL of these to the customer): " + dishList, rels:["Category(Biriyani) -[INCLUDES]-> Dish"], conf:97, intent:"biryani", toPin:false, excludeDish:null };
-    }
-    const d2 = await q4j('{ dishes(where:{name:{contains:"Biriyani"}}){ name price } }', "biryani-fallback");
-    const d3 = await q4j('{ dishes(where:{name:{contains:"Biryani"}}){ name price } }', "biryani-fallback2");
-    const all = [].concat(d2.dishes||[], d3.dishes||[]);
-    if (all.length) return { text:"BIRYANI DISHES: " + all.map(function(x){ return x.name + " ($" + x.price + ")"; }).join(", "), rels:["Dish name contains Biriyani"], conf:95, intent:"biryani", toPin:false, excludeDish:null };
-  }
-  if (/\b(dosa|south indian|idli|vada|uttapam)\b/i.test(m)) {
-    const d = await q4j('{ categories(where:{name:{eq:"Dosa & South Indian"}}){ name includesDishes { name price } } }', "dosa");
-    if (d.categories && d.categories.length && d.categories[0].includesDishes && d.categories[0].includesDishes.length)
-      return { text:"DOSA & SOUTH INDIAN: " + d.categories[0].includesDishes.map(function(x){ return x.name + " ($" + x.price + ")"; }).join(", "), rels:["Category(Dosa) -[INCLUDES]-> Dish"], conf:97, intent:"dosa", toPin:false, excludeDish:null };
-  }
-  if (/\b(naan|bread|roti|paratha|kulcha)\b/i.test(m)) {
-    const d = await q4j('{ categories(where:{name:{eq:"Breads & Naan"}}){ name includesDishes { name price } } }', "breads");
-    if (d.categories && d.categories.length && d.categories[0].includesDishes && d.categories[0].includesDishes.length)
-      return { text:"BREADS: " + d.categories[0].includesDishes.map(function(x){ return x.name + " ($" + x.price + ")"; }).join(", "), rels:["Category(Breads) -[INCLUDES]-> Dish"], conf:97, intent:"breads", toPin:false, excludeDish:null };
-  }
-  if (/\b(vegetarian|veg dish|no meat|plant based|meatless)\b/i.test(m)) {
-    const d = await q4j('{ dishes(where:{isVeg:{eq:"true"}}){ name price spiceLevel mustTry } }', "vegetarian");
-    if (d.dishes && d.dishes.length) {
-      const must = d.dishes.filter(function(x){ return x.mustTry === "true"; });
-      const show = must.length ? must : d.dishes;
-      return { text:"VEGETARIAN (" + d.dishes.length + " total): " + show.slice(0,8).map(function(x){ return x.name + " ($" + x.price + ")"; }).join(", "), rels:["Dish: isVeg=true"], conf:95, intent:"vegetarian", toPin:false, excludeDish:null };
-    }
-  }
-  if (/\b(must try|must-try|best dish|popular dish|signature dish|chef special|what to order|what should i order|famous dish)\b/i.test(m)) {
-    const d = await q4j('{ dishes(where:{mustTry:{eq:"true"}}){ name price isVeg spiceLevel } }', "must-try");
-    if (d.dishes && d.dishes.length) return { text:"MUST-TRY: " + d.dishes.slice(0,8).map(function(x){ return x.name + " ($" + x.price + (x.isVeg === "true" ? " veg" : "") + ")"; }).join(", "), rels:["Dish: mustTry=true"], conf:95, intent:"must-try", toPin:false, excludeDish:null };
-  }
-  if (/\b(seafood|shrimp|prawn)\b/i.test(m)) {
-    const d1 = await q4j('{ dishes(where:{name:{contains:"Shrimp"}}){ name price } }', "shrimp");
-    const d2 = await q4j('{ dishes(where:{name:{contains:"Prawn"}}){ name price } }', "prawn");
-    const all = [].concat(d1.dishes || [], d2.dishes || []);
-    if (all.length) return { text:"SEAFOOD: " + all.map(function(x){ return x.name + " ($" + x.price + ")"; }).join(", "), rels:["Seafood dishes"], conf:96, intent:"seafood", toPin:false, excludeDish:null };
-  }
-  if (/\b(lamb|goat|mutton)\b/i.test(m)) {
-    const d1 = await q4j('{ dishes(where:{name:{contains:"Lamb"}}){ name price } }', "lamb");
-    const d2 = await q4j('{ dishes(where:{name:{contains:"Goat"}}){ name price } }', "goat");
-    const all = [].concat(d1.dishes || [], d2.dishes || []);
-    if (all.length) return { text:"LAMB/GOAT: " + all.map(function(x){ return x.name + " ($" + x.price + ")"; }).join(", "), rels:["Dish name contains Lamb/Goat"], conf:96, intent:"lamb/goat", toPin:false, excludeDish:null };
-  }
-  if (/\b(chicken)\b/i.test(m) && !matchedDish) {
-    const d = await q4j('{ dishes(where:{name:{contains:"Chicken"}}){ name price spiceLevel } }', "chicken-generic");
-    if (d.dishes && d.dishes.length) return { text:"CHICKEN DISHES: " + d.dishes.map(function(x){ return x.name + " ($" + x.price + ", " + x.spiceLevel + ")"; }).join(", "), rels:["Dish name contains Chicken"], conf:96, intent:"chicken dishes", toPin:false, excludeDish:null };
-  }
-  if (/\b(about|your story|history|founded|who are you)\b/i.test(m)) {
-    const d = await q4j("{ aboutuses { city state communityRole recognition customerExperience menuType } }", "about");
-    if (d.aboutuses && d.aboutuses.length) {
-      const a = d.aboutuses[0];
-      return { text:"ABOUT: " + (a.city || "Monroe") + ", " + (a.state || "Louisiana") + ". " + (a.communityRole || "") + ". " + (a.recognition || "") + ". " + (a.customerExperience || "") + ".", rels:["Restaurant -[HAS_ABOUT_US]-> AboutUs"], conf:97, intent:"about", toPin:false, excludeDish:null };
-    }
-  }
-  if (/\b(vegan)\b/i.test(m)) {
-    const d = await q4j('{ dishes(where:{isVegan:{eq:"true"}}){ name price spiceLevel } }', "vegan");
-    if (d.dishes && d.dishes.length) return { text:"VEGAN: " + d.dishes.map(function(x){ return x.name + " ($" + x.price + ")"; }).join(", "), rels:["Dish: isVegan=true"], conf:96, intent:"vegan", toPin:false, excludeDish:null };
-  }
-  if (/\b(menu|what do you (have|serve|offer)|show me|our food|food options)\b/i.test(m)) {
-    const d = await q4j('{ dishes(where:{mustTry:{eq:"true"}}){ name price isVeg spiceLevel } }', "menu-browse");
-    if (d.dishes && d.dishes.length) return { text:"MENU HIGHLIGHTS: " + d.dishes.map(function(x){ return x.name + " ($" + x.price + (x.isVeg === "true" ? " veg" : "") + ")"; }).join(" | "), rels:["Dish: mustTry=true"], conf:95, intent:"menu browse", toPin:false, excludeDish:null };
-  }
-
-  // ── NO MATCH → Pinecone semantic ─────────────────────
-  addLog("router", m, "skip", "No keyword match — routing to Pinecone semantic search", Date.now());
-  return { text:"", rels:[], conf:0, intent:"pinecone-semantic", toPin:true, excludeDish:null };
-}
-
-// ── CONFIDENCE SCORING ────────────────────────────────
-function calcScores(text, rels, conf, fromPinecone) {
-  if (!text) return { c: n4jLive ? 28 : 18, h: n4jLive ? 68 : 88 };
-  if (text.includes("MENU_REDIRECT")) return { c:99, h:1 };
-  if (fromPinecone) {
-    const c = Math.min(Math.max(conf, 75), 95);
-    return { c:c, h: Math.max(4, 100 - c - Math.floor(Math.random() * 6)) };
-  }
-  const hasRel = rels.some(function(r){ return /WORKS_AT|OPERATES_AT|HAS_FEATURE|HAS_ABOUT_US|DISCLOSES|INCLUDES|PAIRS|isBeverage|mustTry|isVeg|Dish|Staff|Allergen|Timing/.test(r); });
-  if (hasRel && conf >= 90) return { c: Math.min(conf + Math.floor(Math.random()*4), 99), h: 1 + Math.floor(Math.random()*5) };
-  if (conf >= 70) return { c: conf, h: 8 + Math.floor(Math.random()*8) };
-  return { c:28, h:72 };
-}
-
-// ── GATE 2 — OUTPUT GUARDRAIL ─────────────────────────
-function gate2(reply, graphContext, confidence, userMsg) {
-  const warnings = [];
-  const lower = reply.toLowerCase();
-  const userLower = (userMsg || "").toLowerCase();
-  // Price check
-  const prices = reply.match(/\$[\d]+\.?[\d]*/g) || [];
-  prices.forEach(function(price) {
-    if (graphContext && graphContext.length > 20 && !graphContext.includes(price)) warnings.push("price-unverified");
-  });
-  // Ungrounded assertion
-  if (["we have","we serve","we offer","is available","is on our menu"].some(function(p){ return lower.includes(p); }) && (!graphContext || graphContext.length < 30)) warnings.push("ungrounded");
-  // Low confidence
-  if (confidence < 40) warnings.push("low-confidence");
-  // Allergen disclaimer
-  if (/\b(allerg|dairy|gluten|shellfish|nut|peanut|lactose)\b/i.test(userLower) && !lower.includes("staff") && !lower.includes("inform") && !lower.includes("notify")) warnings.push("needs-allergen-note");
-
-  if (!warnings.length) return { safe: reply, warnings: [], triggered: false };
-
-  let safe = reply;
-  if (warnings.includes("price-unverified")) safe = '<em style="font-size:11px;color:#92400E">Note: price unverified — please confirm with staff.</em><br>' + safe;
-  if (warnings.includes("ungrounded")) safe = '<em style="font-size:11px;color:#92400E">Note: based on general knowledge, not live menu data.</em><br>' + safe;
-  if (warnings.includes("low-confidence")) safe += '<br><em style="font-size:11px;color:#92400E">Low confidence — please verify with our team.</em>';
-  if (warnings.includes("needs-allergen-note")) safe += "<br><br>Always inform our staff of any food allergies before ordering. Dishes are prepared in a shared kitchen.";
-
-  addLog("Gate 2", userMsg.substring(0,50), "gate", "Warnings: " + warnings.join(", "), Date.now());
-  return { safe: safe, warnings: warnings, triggered: true };
-}
-
-// ── CLAUDE API ────────────────────────────────────────
-async function callClaude(msg, graphText) {
-  if (!AK) return null;
-  const hasData = graphText && graphText.length > 20;
-  const sys = "You are Chef Krish, the warm AI host of Taste of India restaurant in Monroe, Louisiana.\n\n" +
-    "CRITICAL RULES — never break these:\n" +
-    "• ZERO beef. Taste of India is Hindu-owned. Cows are sacred. No beef ever served.\n" +
-    "• Only state names and prices that appear in the VERIFIED DATA below.\n" +
-    "• Never invent a dish, price, staff name, or hour that is not in the data.\n\n" +
-    (hasData
-      ? "VERIFIED LIVE DATA FROM NEO4J / PINECONE:\n" + graphText + "\n\nCRITICAL: (1) List the EXACT dishes, names, and prices from the data above — all of them. (2) NEVER say you lack menu data when data is provided. (3) If WAITERS shown: state those exact names confidently. (4) If BIRYANI OPTIONS shown: list every item with price. (5) Only name dishes from the data above"
-      : "No live data for this specific question. DO NOT say you don't have information. Instead say: I'd love to help! Could you be a bit more specific? I can share details about our biryani, curries, dosa, staff, hours, or facilities — just let me know what you're curious about! Tone: warm, helpful, curious.") +
-    "\n\nWhen item is not Indian: warmly acknowledge, explain we are authentic Indian, suggest real Indian alternatives from the data above.\n" +
-    "Tone: warm, premium, human, 2-4 sentences, food emojis. Never robotic.";
-  hist.push({ role:"user", content:msg });
-  try {
-    const r = await fetch("https://api.anthropic.com/v1/messages", {
-      method:"POST",
-      headers:{"Content-Type":"application/json","x-api-key":AK,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
-      body: JSON.stringify({ model:"claude-haiku-4-5-20251001", max_tokens:400, system:sys, messages:hist.slice(-10) }) });
-    const data = await r.json();
-    if (data.error) throw new Error(data.error.message);
-    const reply = data.content && data.content[0] ? data.content[0].text : null;
-    if (reply) {
-      hist.push({ role:"assistant", content:reply });
-      const inp = (data.usage && data.usage.input_tokens) || 0;
-      const out = (data.usage && data.usage.output_tokens) || 0;
-      addTokens(msg, inp, out);
-    }
-    return reply;
-  } catch(e) {
-    addLog("claude", "POST /v1/messages", "err", e.message, Date.now());
-    return null;
-  }
-}
-
-// ── SEND ──────────────────────────────────────────────
-async function send() {
-  const inp = document.getElementById("uinput");
-  const txt = inp.value.trim();
-  if (!txt) return;
-  inp.value = ""; inp.style.height = "auto";
-  addUser(txt);
-
-  // Client cache check
-  const cached = getCached(txt);
-  if (cached) {
-    addLog("cache-hit", txt, "ok", "From local cache", Date.now());
-    addBot(cached.reply, cached.tag, cached.scores, cached.rels, cached.intent, []);
-    return;
-  }
-
-  showTyping();
-
-  // Beef guard — instant, no Worker call
-  if (/(beef|veal|cow meat)/i.test(txt)) {
-    removeTyping();
-    addBot("🙏 Namaste! We don't serve beef at Taste of India — in Hindu culture, cows are sacred. May I suggest our <strong>Lamb Rogan Josh</strong> or <strong>Chicken Tikka Masala</strong> instead?",
-      "t-neo", { c: 99, h: 0 }, ["beef-guard"], "beef-block", []);
-    _lastGraphText = "";
-    return;
-  }
-
-  const t0 = Date.now();
-  try {
-    const res = await fetch(WORKER + "/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: txt, sessionId: SESSION_ID, history: hist.slice(-8) })
-    });
-
-    removeTyping();
-
-    if (!res.ok) {
-      const errData = await res.json().catch(() => ({}));
-      addLog("worker-error", txt, "err", "HTTP " + res.status + ": " + (errData.error || "unknown"), Date.now());
-      addBot("⚠️ Worker error " + res.status + ": " + (errData.error || "please try again."),
-        "t-cla", { c: 0, h: 0 }, [], "error", []);
-      return;
-    }
-
-    const data  = await res.json();
-    const ms    = Date.now() - t0;
-    const reply = data.response || "I'm here to help!";
-    const routeType = data.routeType || "worker";
-    const conf  = data.confidence  || 75;
-    const hall  = data.hallucination || 20;
-    const srcs  = data.sources    || [];
-
-    const tag = /neo4j|staff|dish|timing|allergen|veg|musttry|about|biryani|breads|chicken|buffet|pairing|beverages/.test(routeType) ? "t-neo"
-      : /pinecone|semantic/.test(routeType) ? "t-pin"
-      : routeType === "cache_hit" ? "t-neo"
-      : "t-cla";
-
-    // Update conversation history
-    hist.push({ role: "user", content: txt });
-    hist.push({ role: "assistant", content: reply });
-    if (hist.length > 20) hist = hist.slice(-20);
-
-    // Token tracking — increment Q always; input/output only when Claude was called
-    if (data.usage) {
-      addTokens(txt, data.usage.input_tokens || 0, data.usage.output_tokens || 0);
-    } else {
-      // cheapRouter / cache hit — count the question but no Claude tokens
-      totalQ++;
-      document.getElementById("tk-q").textContent = totalQ;
-    }
-
-    // Set graph text for cart button extraction
-    _lastGraphText = reply;
-
-    addLog(routeType, txt, "ok", ms + "ms · conf " + conf + "% · " + (srcs[0] || ""), Date.now());
-    // Allergen cross-check: if user mentioned allergy earlier, warn on dish responses
-    let allergenWarning = "";
-    const recentHistory = hist.slice(-12).map(function(h){ return (h.content||"").toLowerCase(); }).join(" ");
-    const hasAllergyMention = /\b(dairy|gluten|nut|peanut|shellfish|lactose|allerg|intoleran)\b/.test(recentHistory);
-    if (hasAllergyMention && /\b(butter|cream|cheese|paneer|ghee|milk|naan|kulcha)\b/i.test(reply)) {
-      allergenWarning = "<br><br>⚠️ <strong>Allergy reminder:</strong> This dish may contain ingredients you mentioned sensitivity to. Always inform our staff of food allergies before ordering — dishes are prepared in a shared kitchen.";
-    }
-
-    // Convert **markdown** to <strong>HTML</strong> for bold rendering
-    const displayReply = reply
-      .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-      .replace(/\n/g, "<br>") + allergenWarning;
-    addBot(displayReply, tag, { c: conf, h: hall }, srcs, routeType + " · " + ms + "ms", []);
-
-    // Cart item returned from Worker
-    if (data.cartItem && data.cartItem.name && data.cartItem.price) {
-      addToCart(data.cartItem.name, parseFloat(data.cartItem.price));
-    }
-
-    // Cache (skip allergens)
-    if (!/(allerg|gluten|nut|dairy|vegan|lactose|peanut|shellfish|soy|sesame)/i.test(txt)) {
-      setCache(txt, reply, tag, { c: conf, h: hall }, srcs, routeType + " · " + ms + "ms", []);
-    }
-
-  } catch(e) {
-    removeTyping();
-    addLog("network-error", txt, "err", e.message, Date.now());
-    addBot("⚠️ Network error: " + e.message, "t-cla", { c: 0, h: 100 }, [], "network-error", []);
-  }
-}
-
-// ── UI HELPERS ────────────────────────────────────────
-function addLog(intent, gql, status, summary, ts, ms, data) {
-  logs.unshift({ intent:intent, gql:gql, status:status, summary:summary, time:new Date(ts || Date.now()).toLocaleTimeString(), ms:ms || 0, data:data, open:false });
-  renderLogs();
-}
-function renderLogs() {
-  const el = document.getElementById("log-body");
-  if (!logs.length) { el.innerHTML = '<div style="font-size:11px;color:#AAA;text-align:center;padding:20px 0">No queries yet.</div>'; return; }
-  el.innerHTML = logs.map(function(l, i) {
-    const icon = l.status === "ok" ? "OK" : l.status === "err" ? "ERR" : l.status === "gate" ? "GATE" : l.status === "pin" ? "PIN" : "SKIP";
-    return '<div class="log-entry ' + l.status + '" onclick="toggleLog(' + i + ')">' +
-      '<div style="display:flex;justify-content:space-between"><span class="log-status ' + l.status + '">' + icon + '</span><span class="log-time">' + l.time + (l.ms ? " · " + l.ms + "ms" : "") + '</span></div>' +
-      '<div style="font-size:10px;font-weight:600;color:#555;margin:2px 0">' + l.intent + '</div>' +
-      '<div class="log-q">' + l.gql.substring(0, 80) + (l.gql.length > 80 ? "..." : "") + '</div>' +
-      '<div style="font-size:10px;color:' + (l.status === "ok" || l.status === "pin" ? "#1D9E75" : l.status === "gate" ? "#F59E0B" : "#E24B4A") + '">' + l.summary + '</div>' +
-      (l.open && l.data ? '<div class="log-data">' + JSON.stringify(l.data, null, 2).substring(0, 400) + '</div>' : '') +
-      '</div>';
-  }).join("");
-}
-function toggleLog(i) { logs[i].open = !logs[i].open; renderLogs(); }
-function clearLogs() { logs.length = 0; renderLogs(); }
-function addTokens(q, inp, out) {
-  totalIn += inp; totalOut += out; totalQ++;
-  tokHistory.unshift({ q:q, inp:inp, out:out, total:inp+out });
-  document.getElementById("tk-in").textContent = totalIn.toLocaleString();
-  document.getElementById("tk-out").textContent = totalOut.toLocaleString();
-  document.getElementById("tk-total").textContent = (totalIn+totalOut).toLocaleString();
-  document.getElementById("tk-q").textContent = totalQ;
-  const mx = Math.max.apply(null, tokHistory.map(function(t){ return t.total; }).concat([1]));
-  document.getElementById("tok-body").innerHTML = tokHistory.map(function(t){
-    return '<div class="tok-entry"><div class="tok-q" title="' + t.q + '">' + t.q.substring(0,36) + (t.q.length>36?"...":"") + '</div>' +
-      '<div style="display:flex;gap:8px;font-size:10px;color:#666;margin-bottom:2px"><span>In: <strong>' + t.inp + '</strong></span><span>Out: <strong>' + t.out + '</strong></span><span>Total: <strong>' + t.total + '</strong></span></div>' +
-      '<div class="tok-bar"><div class="tok-fill" style="width:' + Math.round(t.total/mx*100) + '%"></div></div></div>';
-  }).join("");
-}
-function clearTokens() {
-  tokHistory.length = 0; totalIn = totalOut = totalQ = 0;
-  ["tk-in","tk-out","tk-total","tk-q"].forEach(function(id){ document.getElementById(id).textContent = "0"; });
-  document.getElementById("tok-body").innerHTML = '<div style="font-size:11px;color:#AAA;text-align:center;padding:10px 0">No queries yet.</div>';
-}
-function scoreHTML(c, h, rels, intent, gateWarnings) {
-  const cc = c>=80?"ch":c>=50?"cm":"cl";
-  const hc = h<=20?"hh":h<=50?"hm":"hl";
-  const cclr = c>=80?"#10B981":c>=50?"#F59E0B":"#EF4444";
-  const hclr = h<=20?"#10B981":h<=50?"#F59E0B":"#EF4444";
-  const ri = intent ? '<div class="intent-tag">intent: ' + intent + '</div><br>' : "";
-  const relHtml = rels && rels.length ? '<div style="font-size:10px;color:#0066CC;font-family:monospace;margin-top:5px;padding:4px 7px;background:#F0F7FF;border:1px solid #BFDBFE;border-radius:5px">' + rels.map(function(r){ return "• " + r; }).join("<br>") + '</div>' : "";
-  const gateHtml = gateWarnings && gateWarnings.length
-    ? '<div style="margin-top:4px"><span class="gate-tag">Gate 2: ' + gateWarnings.join(", ") + '</span></div>'
-    : '<div style="margin-top:4px;font-size:9px;color:#10B981;font-family:monospace">Gate 2 passed</div>';
-  return ri + '<div class="scores">' +
-    '<div class="sc ' + cc + '">Confidence: ' + c + '%<div class="bw"><div class="bf" style="width:' + c + '%;background:' + cclr + '"></div></div></div>' +
-    '<div class="sc ' + hc + '">Hallucination: ' + h + '%<div class="bw"><div class="bf" style="width:' + h + '%;background:' + hclr + '"></div></div></div>' +
-    '</div>' + relHtml + gateHtml;
-}
-var _lastGraphText = ""; // set by send() so addBot can extract verified dishes
-
-function addBot(html, tag, scores, rels, intent, gateWarnings) {
-  const tags = { "t-neo":"Neo4j", "t-cla":"Claude AI", "t-both":"Neo4j + Claude", "t-pin":"Pinecone + Claude" };
-  const m = document.getElementById("msgs");
-  const d = document.createElement("div"); d.className = "msg bot";
-  // Build cart buttons only from VERIFIED graph context — zero hallucination risk
-  var cartBtns = "";
-  if (_lastGraphText && scores && scores.c >= 75) {
-    var verified = extractDishesFromContext(_lastGraphText);
-    if (verified.length) {
-      cartBtns = '<div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:5px">' +
-        verified.map(function(dish) {
-          var safeName = String(dish.name).replace(/"/g, "&quot;");
-          return '<button class="add-cart-btn" data-dish="' + safeName + '" data-price="' + dish.price + '">\uD83D\uDED2 Add ' + dish.name + ' ($' + dish.price.toFixed(2) + ')</button>';
-        }).join("") + '</div>';
-    }
-  }
-  d.innerHTML = '<div class="av">\uD83C\uDF5B</div><div class="bub"><div class="stag ' + tag + '">' + (tags[tag]||"Chef Krish") + '</div><div>' + html + '</div>' + cartBtns + (scores ? scoreHTML(scores.c, scores.h, rels, intent, gateWarnings) : "") + '</div>';
-  // Wire up cart buttons via event listeners (no inline onclick — avoids quote-escaping bugs)
-  var btns = d.querySelectorAll(".add-cart-btn");
-  for (var bi = 0; bi < btns.length; bi++) {
-    btns[bi].addEventListener("click", function() {
-      addToCart(this.getAttribute("data-dish"), parseFloat(this.getAttribute("data-price")));
-    });
-  }
-  m.appendChild(d); m.scrollTop = m.scrollHeight;
-}
-function addUser(t) {
-  const m = document.getElementById("msgs"); const d = document.createElement("div"); d.className = "msg user";
-  d.innerHTML = '<div class="av">HI</div><div class="bub">' + t + '</div>'; m.appendChild(d); m.scrollTop = m.scrollHeight;
-}
-function showTyping() {
-  const m = document.getElementById("msgs"); const d = document.createElement("div"); d.className = "msg bot"; d.id = "typ";
-  d.innerHTML = '<div class="av">🍛</div><div class="bub"><div class="typing"><span></span><span></span><span></span></div></div>'; m.appendChild(d); m.scrollTop = m.scrollHeight;
-}
-function removeTyping() { const t = document.getElementById("typ"); if (t) t.remove(); }
-function showTab(name, btn) {
-  document.querySelectorAll(".tab-pane").forEach(function(p){ p.classList.remove("on"); });
-  document.querySelectorAll(".th-btn").forEach(function(b){ b.classList.remove("on"); });
-  document.getElementById("tab-" + name).classList.add("on"); btn.classList.add("on");
-}
-function ask(q) { document.getElementById("uinput").value = q; send(); }
-// ── CART SYSTEM ──────────────────────────────────────────
-var cart = [];
-var currentUser = null; // { name, email, picture }
-var WHATSAPP_NUMBER = "+916300008435"; // Replace with Taste of India's WhatsApp number
-
-function openCart() {
-  document.getElementById("cartPanel").classList.add("open");
-  document.getElementById("cartOverlay").classList.add("open");
-}
-function closeCart() {
-  document.getElementById("cartPanel").classList.remove("open");
-  document.getElementById("cartOverlay").classList.remove("open");
-}
-
-function addToCart(name, price) {
-  var existing = cart.find(function(i){ return i.name === name; });
-  if (existing) {
-    existing.qty += 1;
-  } else {
-    cart.push({ name: name, price: parseFloat(price), qty: 1 });
-  }
-  renderCart();
-  // Flash badge
-  var badge = document.getElementById("cartBadge");
-  badge.style.display = "flex";
-  badge.textContent = cart.reduce(function(s,i){ return s + i.qty; }, 0);
-  openCart();
-}
-
-function changeQty(name, delta) {
-  var idx = cart.findIndex(function(i){ return i.name === name; });
-  if (idx === -1) return;
-  cart[idx].qty += delta;
-  if (cart[idx].qty <= 0) cart.splice(idx, 1);
-  renderCart();
-  var total = cart.reduce(function(s,i){ return s + i.qty; }, 0);
-  var badge = document.getElementById("cartBadge");
-  badge.style.display = total > 0 ? "flex" : "none";
-  badge.textContent = total;
-}
-
-function renderCart() {
-  var body = document.getElementById("cartBody");
-  var totalEl = document.getElementById("cartTotal");
-  var waBtn = document.getElementById("waBtn");
-  if (!cart.length) {
-    body.innerHTML = '<div class="cart-empty">Your cart is empty.<br>Ask Chef Krish for recommendations!</div>';
-    totalEl.textContent = "$0.00";
-    waBtn.disabled = true;
-    return;
-  }
-  var total = cart.reduce(function(s,i){ return s + i.price * i.qty; }, 0);
-  totalEl.textContent = "$" + total.toFixed(2);
-  waBtn.disabled = false;
-  body.innerHTML = cart.map(function(item, idx) {
-    var safeName = String(item.name).replace(/"/g, "&quot;");
-    return '<div class="cart-item">' +
-      '<div class="cart-item-info">' +
-        '<div class="cart-item-name">' + item.name + '</div>' +
-        '<div class="cart-item-price">$' + item.price.toFixed(2) + ' each</div>' +
-      '</div>' +
-      '<div class="cart-item-qty">' +
-        '<button class="qty-btn" data-dish="' + safeName + '" data-delta="-1">\u2212</button>' +
-        '<span class="qty-num">' + item.qty + '</span>' +
-        '<button class="qty-btn" data-dish="' + safeName + '" data-delta="1">+</button>' +
-      '</div>' +
-    '</div>';
-  }).join("");
-  // Wire quantity buttons via listeners (no inline onclick — avoids quote bugs)
-  var qbtns = body.querySelectorAll(".qty-btn");
-  for (var qi = 0; qi < qbtns.length; qi++) {
-    qbtns[qi].addEventListener("click", function() {
-      changeQty(this.getAttribute("data-dish"), parseInt(this.getAttribute("data-delta"), 10));
-    });
-  }
-}
-
-function sendWhatsApp() {
-  if (!cart.length) return;
-  var total = cart.reduce(function(s,i){ return s + i.price * i.qty; }, 0);
-  var userName = currentUser ? currentUser.name : "Customer";
-  var lines = ["🍛 *Taste of India — New Order*", ""];
-  lines.push("👤 *Customer:* " + userName);
-  if (currentUser && currentUser.email) lines.push("📧 *Email:* " + currentUser.email);
-  lines.push("");
-  lines.push("*Order Details:*");
-  cart.forEach(function(item) {
-    lines.push("• " + item.name + " x" + item.qty + " — $" + (item.price * item.qty).toFixed(2));
-  });
-  lines.push("");
-  lines.push("💰 *Total: $" + total.toFixed(2) + "*");
-  lines.push("🕐 *Ready in 30 minutes · Pickup · Pay at counter*");
-  lines.push("");
-  lines.push("Session: " + SESSION_ID);
-  var msg = encodeURIComponent(lines.join("\n"));
-  window.open("https://wa.me/" + WHATSAPP_NUMBER + "?text=" + msg, "_blank");
-  // Log to Sheets
-  if (SHEETS_URL && !SHEETS_URL.includes("YOUR_GOOGLE")) {
-    fetch(SHEETS_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        sessionId: SESSION_ID,
-        customerName: userName,
-        customerEmail: currentUser ? currentUser.email : "",
-        orderItems: cart.map(function(i){ return i.name + " x" + i.qty; }).join(", "),
-        total: "$" + total.toFixed(2),
-        timestamp: new Date().toISOString(),
-        type: "whatsapp_order"
-      })
-    }).catch(function(){});
-  }
-}
-
-// ── GOOGLE OAUTH (popup-free, GSI button) ────────────────
-function handleSignIn() {
-  if (currentUser) {
-    // Already signed in — show sign out option
-    if (confirm("Sign out, " + currentUser.name + "?")) {
-      currentUser = null;
-      document.getElementById("signinLabel").textContent = "🔑 Sign In";
-      document.getElementById("signinBtn").title = "";
-    }
-    return;
-  }
-  // Guard 1 — Client ID not configured yet
-  var CLIENT_ID = "10005816617-30ggqjn2c7hktchpi0otja3qgfl6lutc.apps.googleusercontent.com";
-  if (CLIENT_ID.indexOf("YOUR_GOOGLE_CLIENT_ID") !== -1) {
-    alert("Google Sign-In is not set up yet. Add your OAuth Client ID in the code first.");
-    return;
-  }
-  // Guard 2 — Google library not loaded yet (slow network or blocked)
-  if (typeof google === "undefined" || !google.accounts || !google.accounts.oauth2) {
-    alert("Google Sign-In is still loading. Please wait a moment and try again.");
-    return;
-  }
-  // Use Google One Tap / token popup
-  google.accounts.oauth2.initTokenClient({
-    client_id: CLIENT_ID,
-    scope: "profile email",
-    callback: function(tokenResponse) {
-      if (tokenResponse && tokenResponse.access_token) {
-        fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
-          headers: { "Authorization": "Bearer " + tokenResponse.access_token }
-        })
-        .then(function(r){ return r.json(); })
-        .then(function(profile) {
-          currentUser = { name: profile.name, email: profile.email, picture: profile.picture };
-          var label = document.getElementById("signinLabel");
-          label.innerHTML = (profile.picture ? '<img src="' + profile.picture + '" alt="">' : "") + " " + profile.name.split(" ")[0];
-          document.getElementById("signinBtn").title = profile.email;
-          addBot("Welcome, <strong>" + profile.name + "</strong>! 🙏 Great to have you at Taste of India. Ask me anything or add dishes to your cart and order via WhatsApp!", "t-cla", null, [], null, []);
-        })
-        .catch(function(){ alert("Could not fetch profile. Check your Google Client ID."); });
-      }
-    }
-  }).requestAccessToken();
-}
-
-// ── INJECT ADD TO CART BUTTON INTO BOT MESSAGES ─────────
-// Called from addBot when dishes with verified prices are detected
-function extractDishesFromContext(graphText) {
-  if (!graphText) return [];
-  var dishes = [];
-  var seen = {};
-  // STRICT: only match "Dish Name ($XX.XX" — exact format from Neo4j/Pinecone context
-  // The comma or space after price ensures we never match Claude sentence fragments
-  var re = /([A-Z][A-Za-z &']{2,40})\s*\(\$([0-9]+\.[0-9]{2})\s*[,) ]/g;
-  var m;
-  while ((m = re.exec(graphText)) !== null) {
-    var name = m[1].trim();
-    var price = parseFloat(m[2]);
-    var lower = name.toLowerCase();
-    // Must exist in our known dish list — zero hallucination
-    var isKnown = DISH_NAMES.some(function(d){ return lower === d || lower.includes(d); });
-    // Skip if already added, price out of range, or name too short
-    if (!isKnown || price <= 0 || price >= 100 || seen[lower]) continue;
-    // Skip anything that looks like a sentence fragment (contains verb words)
-    if (/(suggest|recommend|try|have|our|may|pair|serve|love|great|good)/i.test(name)) continue;
-    seen[lower] = true;
-    dishes.push({ name: name, price: price });
-  }
-  return dishes;
-}
-
-window.addEventListener("load", checkN4j);
-</script>
-
-<!-- ── CART OVERLAY ── -->
+<!-- CART -->
 <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
-
-<!-- ── CART PANEL ── -->
 <div class="cart-panel" id="cartPanel">
   <div class="cart-hdr">
     <h2>🛒 Your Order</h2>
@@ -1446,15 +241,408 @@ window.addEventListener("load", checkN4j);
       <span class="cart-total-label">Total</span>
       <span class="cart-total-price" id="cartTotal">$0.00</span>
     </div>
-    <div class="cart-note">
-      🕐 Your order will be ready in <strong>30 minutes</strong> · Pickup only · Pay at the counter
-    </div>
-    <button class="wa-btn" id="waBtn" onclick="sendWhatsApp()" disabled>
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.115 1.526 5.845L.057 23.428a.5.5 0 0 0 .606.61l5.808-1.525A11.94 11.94 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.809 9.809 0 0 1-5.022-1.38l-.36-.214-3.733.98.997-3.64-.235-.374A9.818 9.818 0 0 1 2.182 12C2.182 6.57 6.57 2.182 12 2.182c5.43 0 9.818 4.388 9.818 9.818 0 5.43-4.388 9.818-9.818 9.818z"/></svg>
-      Confirm Order via WhatsApp
-    </button>
+    <div class="cart-note">🕐 Your order will be ready in <strong>30 minutes</strong> · Pickup only · Pay at the counter</div>
+    <button class="wa-btn" id="waBtn" onclick="sendWhatsApp()" disabled>Confirm Order via WhatsApp</button>
   </div>
 </div>
 
+<script>
+"use strict";
+
+// ════════════════════════════════════════════════════════════════════════
+// CHEF KRISH FRONTEND V9
+//
+// This file talks to ONE endpoint: the Cloudflare Worker at WORKER below.
+// There is no Neo4j URL, no Pinecone host, no Voyage key, no Anthropic key
+// anywhere in this file — all secrets live server-side in the Worker's
+// encrypted environment variables. This file only renders what the Worker
+// sends back and forwards what the user types.
+// ════════════════════════════════════════════════════════════════════════
+
+const WORKER = "https://chef-krish-backend.boddedahimateja.workers.dev";
+const SESSION_ID = "sess_" + Math.random().toString(36).slice(2, 9);
+const WHATSAPP_NUMBER = "+916300008435";
+const SHEETS_URL = "https://script.google.com/macros/s/AKfycbwDe53MBGKcPOJa0IDxN78gFy9Z-7ClxGAMZd2iImQWrRdu1AGD3_xk7SlEwnZPPZZlpw/exec";
+const GOOGLE_CLIENT_ID = "10005816617-30ggqjn2c7hktchpi0otja3qgfl6lutc.apps.googleusercontent.com";
+
+let hist = [];
+let totalIn = 0, totalOut = 0, totalQ = 0;
+const logs = [], tokHistory = [];
+let n4jLive = false, pineconeReady = false;
+let cart = [];
+let currentUser = null;
+
+const ORDER_RE = /\b(order|want|i.?ll (have|get|take)|give me|can i (get|have)|i.?d like|i want|add to|get me)\b/i;
+
+// ── Client-side cache (mirrors Worker cache, avoids a round-trip for
+// repeat questions within the same session). Allergen questions are
+// NEVER cached client-side either, matching the Worker's rule. ──────────
+const CACHE_PREFIX = "ck_v9_";
+const CACHE_TTL_MS = 30 * 60 * 1000;
+const CACHE_NEVER_RE = /\b(allerg|nut|peanut|dairy|gluten|shellfish|lactose|vegan|available tonight|today.?s special|open now|hours today)\b/i;
+
+function getCached(query) {
+  if (CACHE_NEVER_RE.test(query)) return null;
+  try {
+    const key = CACHE_PREFIX + query.trim().toLowerCase();
+    const raw = sessionStorage.getItem(key);
+    if (!raw) return null;
+    const obj = JSON.parse(raw);
+    if (Date.now() - obj.ts > CACHE_TTL_MS) { sessionStorage.removeItem(key); return null; }
+    return obj;
+  } catch(e) { return null; }
+}
+function setCache(query, reply, tag, scores, rels, intent) {
+  if (CACHE_NEVER_RE.test(query)) return;
+  try {
+    const key = CACHE_PREFIX + query.trim().toLowerCase();
+    sessionStorage.setItem(key, JSON.stringify({ reply, tag, scores, rels, intent, ts: Date.now() }));
+  } catch(e) {}
+}
+
+// ── STARTUP — calls Worker /health only. No direct Neo4j/Pinecone probe
+// from the browser; the Worker proves its own connectivity. ─────────────
+async function checkN4j() {
+  const bar = document.getElementById("sbar");
+  bar.className = "sbar warn";
+  bar.textContent = "Connecting to Cloudflare Worker...";
+  try {
+    const r = await fetch(WORKER + "/health");
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const data = await r.json();
+    n4jLive = !!(data.neo4j && data.neo4j.read);
+    pineconeReady = !!(data.pinecone && data.pinecone.ok);
+    const dishCount = data.neo4j?.dishCount ?? "?";
+    if (n4jLive) {
+      bar.className = "sbar ok";
+      bar.textContent = "Worker LIVE · Neo4j " + dishCount + " dishes · Pinecone " + (pineconeReady ? "ready" : "unreachable") + " · Gate 2 ON · No key needed in browser";
+      addLog("startup", "health", "ok", "Worker healthy · Neo4j:" + n4jLive + " · Pinecone:" + pineconeReady, Date.now());
+    } else {
+      bar.className = "sbar warn";
+      bar.textContent = "Worker UP but Neo4j read failed — " + (data.neo4j?.error || "check /health");
+      addLog("startup", "health", "warn", "Neo4j read: false · " + (data.neo4j?.error || "unknown"), Date.now());
+    }
+  } catch(e) {
+    bar.className = "sbar err";
+    bar.textContent = "Worker unreachable: " + e.message;
+    addLog("startup", "health", "err", e.message, Date.now());
+  }
+}
+
+// ── VOICE INPUT (Web Speech API — browser native, no backend, no key) ───
+let _recog = null, _listening = false;
+function toggleVoice() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { alert("Voice input is not supported in this browser. Try Chrome or Edge."); return; }
+  if (_listening) { if (_recog) _recog.stop(); return; }
+  _recog = new SR();
+  _recog.lang = "en-US";
+  _recog.interimResults = false;
+  _recog.maxAlternatives = 1;
+  const mic = document.getElementById("micBtn");
+  _recog.onstart = () => { _listening = true; mic.textContent = "🔴"; mic.style.background = "#EF4444"; };
+  _recog.onend = () => { _listening = false; mic.textContent = "🎤"; mic.style.background = "#25D366"; };
+  _recog.onerror = () => { _listening = false; mic.textContent = "🎤"; mic.style.background = "#25D366"; };
+  _recog.onresult = (ev) => {
+    const transcript = ev.results[0][0].transcript;
+    document.getElementById("uinput").value = transcript;
+    send();
+  };
+  _recog.start();
+}
+
+// ── SEND — the ONLY network call this file makes to get an answer.
+// Everything (intent classification, Neo4j, Pinecone, Claude, Gate 2)
+// happens server-side in the Worker; this function just posts the
+// message and renders whatever comes back. ──────────────────────────────
+async function send() {
+  const inp = document.getElementById("uinput");
+  const txt = inp.value.trim();
+  if (!txt) return;
+  inp.value = "";
+  inp.style.height = "auto";
+  addUser(txt);
+
+  const cached = getCached(txt);
+  if (cached) {
+    addLog("cache-hit", txt, "ok", "From local cache", Date.now());
+    addBot(cached.reply, cached.tag, cached.scores, cached.rels, cached.intent);
+    return;
+  }
+
+  showTyping();
+  const t0 = Date.now();
+
+  try {
+    const res = await fetch(WORKER + "/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: txt, sessionId: SESSION_ID, history: hist.slice(-8) }),
+    });
+    removeTyping();
+
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      addLog("worker-error", txt, "err", "HTTP " + res.status + ": " + (errData.error || "unknown"), Date.now());
+      addBot("⚠️ Worker error " + res.status + ": " + (errData.error || "please try again."), "t-cla", { c: 0, h: 0 }, [], "error");
+      return;
+    }
+
+    const data = await res.json();
+    const ms = Date.now() - t0;
+    const reply = data.response || "I'm here to help!";
+    const routeType = data.routeType || "worker";
+    const conf = data.confidence ?? 75;
+    const hall = data.hallucination ?? 20;
+    const srcs = data.sources || [];
+
+    const tag = /neo4j|staff|dish|timing|allergen|veg|musttry|about|biryani|breads|chicken|buffet|pairing|beverages/i.test(routeType) ? "t-neo"
+      : /pinecone|semantic/i.test(routeType) ? "t-pin"
+      : routeType === "cache_hit" ? "t-neo"
+      : "t-cla";
+
+    hist.push({ role: "user", content: txt });
+    hist.push({ role: "assistant", content: reply });
+    if (hist.length > 20) hist = hist.slice(-20);
+
+    if (data.usage) {
+      addTokens(txt, data.usage.input_tokens || 0, data.usage.output_tokens || 0);
+    } else {
+      totalQ++;
+      document.getElementById("tk-q").textContent = totalQ;
+    }
+
+    addLog(routeType, txt, "ok", ms + "ms · conf " + conf + "% · " + (srcs[0] || ""), Date.now());
+    renderTrace(txt, data.trace, conf, hall, ms, data.gate2);
+
+    const displayReply = reply
+      .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+      .replace(/\n/g, "<br>");
+
+    addBot(displayReply, tag, { c: conf, h: hall }, srcs, routeType);
+
+    if (data.cartItem && data.cartItem.name && data.cartItem.price) {
+      addToCart(data.cartItem.name, parseFloat(data.cartItem.price));
+    }
+
+    if (!CACHE_NEVER_RE.test(txt)) {
+      setCache(txt, reply, tag, { c: conf, h: hall }, srcs, routeType);
+    }
+  } catch(e) {
+    removeTyping();
+    addLog("network-error", txt, "err", e.message, Date.now());
+    addBot("⚠️ Network error: " + e.message, "t-cla", { c: 0, h: 100 }, [], "network-error");
+  }
+}
+
+// ── CODE PATH TAB — Live Query Trace. Renders the `trace` object the
+// Worker attaches to every /chat response (see buildTrace() in worker.js).
+function renderTrace(query, trace, conf, hall, ms, gate2Result) {
+  const el = document.getElementById("trace-body");
+  if (!el) return;
+  if (!trace) { el.innerHTML = '<div class="cp-empty">No trace returned for this query.</div>'; return; }
+
+  const entities = trace.entities && Object.keys(trace.entities).length
+    ? Object.entries(trace.entities).map(([k,v]) => `${k}: ${JSON.stringify(v)}`).join("<br>")
+    : "none";
+
+  el.innerHTML =
+    '<div class="cp-card">' +
+      '<h4>Query</h4>' +
+      '<div class="cp-arrow">"' + query.replace(/</g,"&lt;") + '"</div>' +
+      '<div class="cp-row"><span>Frontend fn</span><span>' + (trace.frontendAction || "send()") + '</span></div>' +
+      '<div class="cp-row"><span>Worker route</span><span>' + (trace.workerRoute || "/chat") + '</span></div>' +
+      '<div class="cp-row"><span>Intent</span><span>' + (trace.intent || "—") + '</span></div>' +
+      '<div class="cp-row"><span>Entities</span><span>' + entities + '</span></div>' +
+      '<div class="cp-row"><span>Tools used</span><span>' + (trace.toolsUsed || []).join(", ") + '</span></div>' +
+      '<div class="cp-row"><span>Neo4j query</span><span>' + (trace.neo4jQueryName || "n/a") + '</span></div>' +
+      '<div class="cp-row"><span>Pinecone used</span><span>' + (trace.pineconeUsed ? "yes" : "no") + '</span></div>' +
+      '<div class="cp-row"><span>Claude used</span><span>' + (trace.claudeUsed ? "yes" : "no") + '</span></div>' +
+      '<div class="cp-row"><span>Cache</span><span>' + (trace.cacheStatus || "miss") + '</span></div>' +
+      '<div class="cp-row"><span>Confidence</span><span>' + conf + '%</span></div>' +
+      '<div class="cp-row"><span>Hallucination</span><span>' + hall + '%</span></div>' +
+      '<div class="cp-row"><span>Latency</span><span>' + ms + 'ms</span></div>' +
+      '<div class="cp-row"><span>Gate 2</span><span>' + (trace.gate2Result || gate2Result || "passed") + '</span></div>' +
+    '</div>';
+}
+
+// ── UI HELPERS ────────────────────────────────────────
+function addLog(intent, gql, status, summary, ts, ms) {
+  logs.unshift({ intent, gql, status, summary, time: new Date(ts || Date.now()).toLocaleTimeString(), ms: ms || 0, open: false });
+  renderLogs();
+}
+function renderLogs() {
+  const el = document.getElementById("log-body");
+  if (!logs.length) { el.innerHTML = '<div style="font-size:11px;color:#AAA;text-align:center;padding:20px 0">No queries yet.</div>'; return; }
+  el.innerHTML = logs.map((l, i) => {
+    const icon = l.status === "ok" ? "OK" : l.status === "err" ? "ERR" : l.status === "gate" ? "GATE" : l.status === "pin" ? "PIN" : "SKIP";
+    return '<div class="log-entry ' + l.status + '" onclick="toggleLog(' + i + ')">' +
+      '<div style="display:flex;justify-content:space-between"><span class="log-status ' + l.status + '">' + icon + '</span><span class="log-time">' + l.time + (l.ms ? " · " + l.ms + "ms" : "") + '</span></div>' +
+      '<div style="font-size:10px;font-weight:600;color:#555;margin:2px 0">' + l.intent + '</div>' +
+      '<div class="log-q">' + l.gql.substring(0, 80) + (l.gql.length > 80 ? "..." : "") + '</div>' +
+      '<div style="font-size:10px;color:' + (l.status === "ok" || l.status === "pin" ? "#1D9E75" : l.status === "gate" ? "#F59E0B" : "#E24B4A") + '">' + l.summary + '</div>' +
+      '</div>';
+  }).join("");
+}
+function toggleLog(i) { logs[i].open = !logs[i].open; renderLogs(); }
+function clearLogs() { logs.length = 0; renderLogs(); }
+
+function addTokens(q, inp, out) {
+  totalIn += inp; totalOut += out; totalQ++;
+  tokHistory.unshift({ q, inp, out, total: inp + out });
+  document.getElementById("tk-in").textContent = totalIn.toLocaleString();
+  document.getElementById("tk-out").textContent = totalOut.toLocaleString();
+  document.getElementById("tk-total").textContent = (totalIn + totalOut).toLocaleString();
+  document.getElementById("tk-q").textContent = totalQ;
+  const mx = Math.max.apply(null, tokHistory.map(t => t.total).concat([1]));
+  document.getElementById("tok-body").innerHTML = tokHistory.map(t =>
+    '<div class="tok-entry"><div class="tok-q" title="' + t.q + '">' + t.q.substring(0,36) + (t.q.length>36?"...":"") + '</div>' +
+    '<div style="display:flex;gap:8px;font-size:10px;color:#666;margin-bottom:2px"><span>In: <strong>' + t.inp + '</strong></span><span>Out: <strong>' + t.out + '</strong></span><span>Total: <strong>' + t.total + '</strong></span></div>' +
+    '<div class="tok-bar"><div class="tok-fill" style="width:' + Math.round(t.total/mx*100) + '%"></div></div></div>'
+  ).join("");
+}
+function clearTokens() {
+  tokHistory.length = 0; totalIn = totalOut = totalQ = 0;
+  ["tk-in","tk-out","tk-total","tk-q"].forEach(id => document.getElementById(id).textContent = "0");
+  document.getElementById("tok-body").innerHTML = '<div style="font-size:11px;color:#AAA;text-align:center;padding:10px 0">No queries yet.</div>';
+}
+
+function scoreHTML(c, h, rels, intent) {
+  const cc = c>=80?"ch":c>=50?"cm":"cl";
+  const hc = h<=20?"hh":h<=50?"hm":"hl";
+  const cclr = c>=80?"#10B981":c>=50?"#F59E0B":"#EF4444";
+  const hclr = h<=20?"#10B981":h<=50?"#F59E0B":"#EF4444";
+  const ri = intent ? '<div class="intent-tag">intent: ' + intent + '</div><br>' : "";
+  const relHtml = rels && rels.length ? '<div style="font-size:10px;color:#0066CC;font-family:monospace;margin-top:5px;padding:4px 7px;background:#F0F7FF;border:1px solid #BFDBFE;border-radius:5px">' + rels.map(r => "• " + r).join("<br>") + '</div>' : "";
+  return ri + '<div class="scores">' +
+    '<div class="sc ' + cc + '">Confidence: ' + c + '%<div class="bw"><div class="bf" style="width:' + c + '%;background:' + cclr + '"></div></div></div>' +
+    '<div class="sc ' + hc + '">Hallucination: ' + h + '%<div class="bw"><div class="bf" style="width:' + h + '%;background:' + hclr + '"></div></div></div>' +
+    '</div>' + relHtml;
+}
+
+function addBot(html, tag, scores, rels, intent) {
+  const tags = { "t-neo":"Neo4j", "t-cla":"Claude AI", "t-both":"Neo4j + Claude", "t-pin":"Pinecone + Claude" };
+  const m = document.getElementById("msgs");
+  const d = document.createElement("div"); d.className = "msg bot";
+  d.innerHTML = '<div class="av">🍛</div><div class="bub"><div class="stag ' + tag + '">' + (tags[tag]||"Chef Krish") + '</div><div>' + html + '</div>' + (scores ? scoreHTML(scores.c, scores.h, rels, intent) : "") + '</div>';
+  m.appendChild(d); m.scrollTop = m.scrollHeight;
+}
+function addUser(t) {
+  const m = document.getElementById("msgs");
+  const d = document.createElement("div"); d.className = "msg user";
+  d.innerHTML = '<div class="av">HI</div><div class="bub">' + t.replace(/</g,"&lt;") + '</div>';
+  m.appendChild(d); m.scrollTop = m.scrollHeight;
+}
+function showTyping() {
+  const m = document.getElementById("msgs");
+  const d = document.createElement("div"); d.className = "msg bot"; d.id = "typ";
+  d.innerHTML = '<div class="av">🍛</div><div class="bub"><div class="typing"><span></span><span></span><span></span></div></div>';
+  m.appendChild(d); m.scrollTop = m.scrollHeight;
+}
+function removeTyping() { const t = document.getElementById("typ"); if (t) t.remove(); }
+function showTab(name, btn) {
+  document.querySelectorAll(".tab-pane").forEach(p => p.classList.remove("on"));
+  document.querySelectorAll(".th-btn").forEach(b => b.classList.remove("on"));
+  document.getElementById("tab-" + name).classList.add("on");
+  btn.classList.add("on");
+}
+
+// ── CART SYSTEM ────────────────────────────────────────
+function openCart() { document.getElementById("cartPanel").classList.add("open"); document.getElementById("cartOverlay").classList.add("open"); }
+function closeCart() { document.getElementById("cartPanel").classList.remove("open"); document.getElementById("cartOverlay").classList.remove("open"); }
+function addToCart(name, price) {
+  const existing = cart.find(i => i.name === name);
+  if (existing) existing.qty += 1;
+  else cart.push({ name, price: parseFloat(price), qty: 1 });
+  renderCart();
+  const badge = document.getElementById("cartBadge");
+  badge.style.display = "flex";
+  badge.textContent = cart.reduce((s,i) => s + i.qty, 0);
+  openCart();
+}
+function changeQty(name, delta) {
+  const idx = cart.findIndex(i => i.name === name);
+  if (idx === -1) return;
+  cart[idx].qty += delta;
+  if (cart[idx].qty <= 0) cart.splice(idx, 1);
+  renderCart();
+  const total = cart.reduce((s,i) => s + i.qty, 0);
+  const badge = document.getElementById("cartBadge");
+  badge.style.display = total > 0 ? "flex" : "none";
+  badge.textContent = total;
+}
+function renderCart() {
+  const body = document.getElementById("cartBody");
+  const totalEl = document.getElementById("cartTotal");
+  const waBtn = document.getElementById("waBtn");
+  if (!cart.length) {
+    body.innerHTML = '<div class="cart-empty">Your cart is empty.<br>Ask Chef Krish for recommendations!</div>';
+    totalEl.textContent = "$0.00"; waBtn.disabled = true; return;
+  }
+  const total = cart.reduce((s,i) => s + i.price * i.qty, 0);
+  totalEl.textContent = "$" + total.toFixed(2);
+  waBtn.disabled = false;
+  body.innerHTML = cart.map(item => {
+    const safeName = String(item.name).replace(/"/g, "&quot;");
+    return '<div class="cart-item"><div class="cart-item-info"><div class="cart-item-name">' + item.name + '</div><div class="cart-item-price">$' + item.price.toFixed(2) + ' each</div></div>' +
+      '<div class="cart-item-qty"><button class="qty-btn" data-dish="' + safeName + '" data-delta="-1">−</button><span class="qty-num">' + item.qty + '</span><button class="qty-btn" data-dish="' + safeName + '" data-delta="1">+</button></div></div>';
+  }).join("");
+  body.querySelectorAll(".qty-btn").forEach(btn => {
+    btn.addEventListener("click", function() { changeQty(this.getAttribute("data-dish"), parseInt(this.getAttribute("data-delta"), 10)); });
+  });
+}
+function sendWhatsApp() {
+  if (!cart.length) return;
+  const total = cart.reduce((s,i) => s + i.price * i.qty, 0);
+  const userName = currentUser ? currentUser.name : "Customer";
+  const lines = ["🍛 *Taste of India — New Order*", "", "👤 *Customer:* " + userName];
+  if (currentUser && currentUser.email) lines.push("📧 *Email:* " + currentUser.email);
+  lines.push("", "*Order Details:*");
+  cart.forEach(item => lines.push("• " + item.name + " x" + item.qty + " — $" + (item.price * item.qty).toFixed(2)));
+  lines.push("", "💰 *Total: $" + total.toFixed(2) + "*", "🕐 *Ready in 30 minutes · Pickup · Pay at counter*", "", "Session: " + SESSION_ID);
+  const msg = encodeURIComponent(lines.join("\n"));
+  window.open("https://wa.me/" + WHATSAPP_NUMBER + "?text=" + msg, "_blank");
+  if (SHEETS_URL) {
+    fetch(SHEETS_URL, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sessionId: SESSION_ID, customerName: userName, customerEmail: currentUser ? currentUser.email : "", orderItems: cart.map(i => i.name + " x" + i.qty).join(", "), total: "$" + total.toFixed(2), timestamp: new Date().toISOString(), type: "whatsapp_order" }),
+    }).catch(() => {});
+  }
+}
+
+// ── GOOGLE SIGN-IN ────────────────────────────────────
+function handleSignIn() {
+  if (currentUser) {
+    if (confirm("Sign out, " + currentUser.name + "?")) {
+      currentUser = null;
+      document.getElementById("signinLabel").textContent = "🔑 Sign In";
+    }
+    return;
+  }
+  if (typeof google === "undefined" || !google.accounts || !google.accounts.oauth2) {
+    alert("Google Sign-In is still loading. Please wait a moment and try again.");
+    return;
+  }
+  google.accounts.oauth2.initTokenClient({
+    client_id: GOOGLE_CLIENT_ID,
+    scope: "profile email",
+    callback: function(tokenResponse) {
+      if (tokenResponse && tokenResponse.access_token) {
+        fetch("https://www.googleapis.com/oauth2/v3/userinfo", { headers: { "Authorization": "Bearer " + tokenResponse.access_token } })
+          .then(r => r.json())
+          .then(profile => {
+            currentUser = { name: profile.name, email: profile.email, picture: profile.picture };
+            const label = document.getElementById("signinLabel");
+            label.innerHTML = (profile.picture ? '<img src="' + profile.picture + '" alt="">' : "") + " " + profile.name.split(" ")[0];
+            addBot("Welcome, <strong>" + profile.name + "</strong>! 🙏 Great to have you at Taste of India. Ask me anything or add dishes to your cart and order via WhatsApp!", "t-cla", null, []);
+          })
+          .catch(() => alert("Could not fetch profile."));
+      }
+    },
+  }).requestAccessToken();
+}
+
+window.addEventListener("load", checkN4j);
+</script>
 </body>
 </html>
