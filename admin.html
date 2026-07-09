@@ -332,7 +332,7 @@
   <section class="panel">
     <h2>Admin request</h2>
     <p class="sub">Describe a single-field change to a single dish.</p>
-    <textarea id="requestInput" placeholder="Example: Update Butter Chicken price to 16.99"></textarea>
+    <textarea id="requestInput" placeholder="Update Butter Chicken price to 16.99 · Add a new dish called Malai Kofta with price 15.99 in category Curries · Remove Chana Masala from the menu · Change the Butter Chicken price back to the previous value"></textarea>
     <div class="btn-row">
       <button class="btn btn-primary" id="btnPlan">Create Update Plan</button>
       <span id="planStatusText" class="sub" style="margin:0;"></span>
@@ -346,15 +346,9 @@
   </section>
 
   <section class="panel" id="previewPanel" style="display:none;">
-    <h2>Update preview</h2>
-    <p class="sub">Nothing has been written to Neo4j yet.</p>
-    <div class="preview-grid">
-      <div class="preview-cell"><div class="k">Dish</div><div class="v" id="pv-dish">—</div></div>
-      <div class="preview-cell"><div class="k">Field</div><div class="v" id="pv-field">—</div></div>
-      <div class="preview-cell old"><div class="k">Old value</div><div class="v" id="pv-old">—</div></div>
-      <div class="preview-cell new"><div class="k">New value</div><div class="v" id="pv-new">—</div></div>
-      <div class="preview-cell status"><div class="k">Plan status</div><div class="v" id="pv-status">—</div></div>
-    </div>
+    <h2 id="previewTitle">Update preview</h2>
+    <p class="sub" id="previewSub">Nothing has been written to Neo4j yet.</p>
+    <div class="preview-grid" id="previewGrid"></div>
     <div class="btn-row">
       <button class="btn btn-approve" id="btnApprove">Approve and Execute</button>
     </div>
@@ -464,11 +458,7 @@ document.getElementById("btnPlan").addEventListener("click", async () => {
     log("menu-log", "Menu Agent", data.log);
     document.getElementById("planStatusText").textContent = "Plan ready — review below.";
 
-    document.getElementById("pv-dish").textContent = currentPlan.dishName;
-    document.getElementById("pv-field").textContent = currentPlan.field;
-    document.getElementById("pv-old").textContent = String(currentPlan.oldValue);
-    document.getElementById("pv-new").textContent = String(currentPlan.newValue);
-    document.getElementById("pv-status").textContent = currentPlan.status;
+    renderPreview(currentPlan);
     document.getElementById("previewPanel").style.display = "block";
   } catch (e) {
     setBadge("menu", "failed");
@@ -480,8 +470,71 @@ document.getElementById("btnPlan").addEventListener("click", async () => {
   }
 });
 
+function previewCell(label, value, cls) {
+  return '<div class="preview-cell' + (cls ? " " + cls : "") + '"><div class="k">' + label + '</div><div class="v">' + value + '</div></div>';
+}
+
+// Renders a different set of cells per action type — an update/revert
+// shows old→new, a create shows the full new dish, a delete shows what
+// will be removed with a visibly destructive treatment.
+function renderPreview(plan) {
+  const grid = document.getElementById("previewGrid");
+  const title = document.getElementById("previewTitle");
+  const sub = document.getElementById("previewSub");
+  const approveBtn = document.getElementById("btnApprove");
+
+  if (plan.action === "create") {
+    title.textContent = "New dish preview";
+    sub.textContent = "Nothing has been written to Neo4j yet.";
+    const d = plan.newDish;
+    grid.innerHTML =
+      previewCell("Action", "Create") +
+      previewCell("Dish", d.name) +
+      previewCell("Price", "$" + d.price, "new") +
+      previewCell("Category", d.category) +
+      previewCell("Spice level", d.spiceLevel) +
+      previewCell("Plan status", plan.status, "status");
+    approveBtn.textContent = "Approve and Execute";
+    approveBtn.dataset.action = "create";
+  } else if (plan.action === "delete") {
+    title.textContent = "⚠️ Delete preview";
+    sub.textContent = "This removes the dish from Neo4j and Pinecone — it cannot be undone from the UI.";
+    const s = plan.snapshot;
+    grid.innerHTML =
+      previewCell("Action", "Delete", "old") +
+      previewCell("Dish", s.name) +
+      previewCell("Current price", "$" + s.price, "old") +
+      previewCell("Plan status", plan.status, "status");
+    approveBtn.textContent = "Confirm Delete";
+    approveBtn.dataset.action = "delete";
+  } else {
+    // update or revert
+    title.textContent = plan.isRevert ? "Revert preview" : "Update preview";
+    sub.textContent = "Nothing has been written to Neo4j yet.";
+    grid.innerHTML =
+      previewCell("Action", plan.isRevert ? "Revert" : "Update") +
+      previewCell("Dish", plan.dishName) +
+      previewCell("Field", plan.field) +
+      previewCell("Old value", String(plan.oldValue), "old") +
+      previewCell("New value", String(plan.newValue), "new") +
+      previewCell("Plan status", plan.status, "status");
+    approveBtn.textContent = "Approve and Execute";
+    approveBtn.dataset.action = plan.isRevert ? "revert" : "update";
+  }
+}
+
 document.getElementById("btnApprove").addEventListener("click", async () => {
   if (!currentPlan) return;
+
+  // Extra guard for delete specifically — it's the one action that can't
+  // be undone from this UI (a revert can restore a price; nothing restores
+  // a deleted node except manually re-creating it). Update/create still
+  // only need the one approve click, matching the plan-approval model.
+  if (currentPlan.action === "delete") {
+    const ok = confirm('Delete "' + currentPlan.dishName + '" from the menu? This cannot be undone from this page.');
+    if (!ok) return;
+  }
+
   document.getElementById("btnApprove").disabled = true;
   setBadge("graph", "running");
   setTimelineStep("graph", "running");
@@ -531,11 +584,18 @@ function renderResult(neo4j, pinecone, data) {
   const pineconeCard = document.getElementById("rc-pinecone");
   if (neo4j) {
     neo4jCard.className = "result-card ok";
-    document.getElementById("rc-neo4j-detail").textContent =
-      "Updated and verified. " + JSON.stringify(neo4j.oldValue) + " → " + JSON.stringify(neo4j.newValue);
+    let detail;
+    if (neo4j.action === "create") {
+      detail = 'Created and verified — "' + neo4j.dish.name + '" ($' + neo4j.dish.price + ') under "' + neo4j.dish.category + '".';
+    } else if (neo4j.action === "delete") {
+      detail = 'Deleted and verified removal — "' + neo4j.dishName + '" no longer exists in Neo4j.';
+    } else {
+      detail = "Updated and verified. " + JSON.stringify(neo4j.oldValue) + " → " + JSON.stringify(neo4j.newValue);
+    }
+    document.getElementById("rc-neo4j-detail").textContent = detail;
   } else {
     neo4jCard.className = "result-card fail";
-    document.getElementById("rc-neo4j-detail").textContent = data.error || (data.plan && data.plan.status) || "Update failed.";
+    document.getElementById("rc-neo4j-detail").textContent = data.error || (data.plan && data.plan.status) || "Action failed.";
   }
   if (pinecone) {
     pineconeCard.className = "result-card " + (pinecone.synced ? "ok" : "fail");
