@@ -247,6 +247,7 @@
 <div class="wrap">
 
   <div class="top-actions">
+    <a href="javascript:void(0)" onclick="changeAdminKey()" style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--ink-soft);text-decoration:underline;margin-right:14px;">🔑 change admin key</a>
     <span class="health-chip" id="healthChip"><span class="dot"></span> checking worker…</span>
   </div>
 
@@ -396,12 +397,25 @@
   <section class="panel" id="ledgerPanel">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;">
       <div>
-        <h2>Provenance ledger</h2>
-        <p class="sub">Persistent, server-side record of every request and outcome — survives a page refresh, unlike the log above.</p>
+        <h2>Admin actions ledger</h2>
+        <p class="sub">Every menu edit request and outcome — price changes, new dishes, deletions, reverts. Persistent, survives a page refresh.</p>
       </div>
       <button class="btn btn-ghost" id="btnRefreshLedger">Refresh</button>
     </div>
     <div class="ledger-list" id="ledgerList">
+      <div class="log-empty">Loading…</div>
+    </div>
+  </section>
+
+  <section class="panel" id="chatLedgerPanel">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;">
+      <div>
+        <h2>Chatbot query ledger</h2>
+        <p class="sub">Every question the customer-facing chatbot answered — what was asked, which route handled it, confidence and hallucination scores.</p>
+      </div>
+      <button class="btn btn-ghost" id="btnRefreshChatLedger">Refresh</button>
+    </div>
+    <div class="ledger-list" id="chatLedgerList">
       <div class="log-empty">Loading…</div>
     </div>
   </section>
@@ -412,6 +426,29 @@
 <script>
 const WORKER_URL = "https://chef-krish-backend.boddedahimateja.workers.dev";
 let currentPlan = null;
+
+// ── ADMIN KEY — this page has no login system, so every request to an
+// /admin-* or /chat-ledger route must carry the same key set as the
+// ADMIN_KEY secret in Worker settings. Stored in localStorage so you're
+// not re-typing it every visit; this file lives on a public GitHub Pages
+// URL, so treat the key itself as the only thing standing between anyone
+// who finds this page and menu-editing access.
+function getAdminKey() {
+  let key = localStorage.getItem("chefkrish_admin_key");
+  if (!key) {
+    key = prompt("Enter the Chef Krish admin key (must match ADMIN_KEY in Worker settings):") || "";
+    if (key) localStorage.setItem("chefkrish_admin_key", key);
+  }
+  return key;
+}
+function changeAdminKey() {
+  const key = prompt("Enter the Chef Krish admin key:") || "";
+  if (key) { localStorage.setItem("chefkrish_admin_key", key); loadLedger(); loadChatLedger(); checkHealth(); }
+}
+function adminUrl(path) {
+  const sep = path.includes("?") ? "&" : "?";
+  return WORKER_URL + path + sep + "key=" + encodeURIComponent(getAdminKey());
+}
 
 function setBadge(agent, state) {
   const el = document.getElementById("badge-" + agent);
@@ -443,7 +480,7 @@ function log(tagClass, tag, text) {
 async function checkHealth() {
   const chip = document.getElementById("healthChip");
   try {
-    const r = await fetch(WORKER_URL + "/admin-agent-health");
+    const r = await fetch(adminUrl("/admin-agent-health"));
     const d = await r.json();
     chip.querySelector(".dot").className = "dot " + (d.neo4j?.ok ? "ok" : "bad");
     chip.lastChild.textContent = " worker " + (d.neo4j?.ok ? "connected" : "neo4j unreachable");
@@ -486,7 +523,7 @@ function renderLedgerRow(e) {
 async function loadLedger() {
   const list = document.getElementById("ledgerList");
   try {
-    const r = await fetch(WORKER_URL + "/admin-ledger?limit=50");
+    const r = await fetch(adminUrl("/admin-ledger?limit=50"));
     const d = await r.json();
     if (!d.entries || !d.entries.length) {
       list.innerHTML = '<div class="log-empty">No admin activity recorded yet.</div>';
@@ -500,6 +537,50 @@ async function loadLedger() {
 loadLedger();
 document.getElementById("btnRefreshLedger").addEventListener("click", loadLedger);
 
+// Second ledger — customer chatbot queries, not admin edits. Same visual
+// language as the admin ledger, different fields: message asked, which
+// route/intent answered it, and the confidence/hallucination scores that
+// came back with that answer.
+function renderChatLedgerRow(e) {
+  const isGoodConfidence = (e.confidence ?? 0) >= 70;
+  const outcomeClass = isGoodConfidence ? "outcome-ok" : "outcome-fail";
+  const time = e.ts ? new Date(e.ts).toLocaleString() : "";
+  const scoreText = (e.confidence != null ? "confidence " + e.confidence + "%" : "") +
+    (e.hallucination != null ? " · hallucination " + e.hallucination + "%" : "");
+  let detail = "";
+  if (e.message) detail += '<div class="ledger-input">&ldquo;' + escapeHtml(e.message) + '&rdquo;</div>';
+  if (scoreText) detail += '<div class="ledger-detail">' + escapeHtml(scoreText.trim()) + "</div>";
+  if (e.sources && e.sources.length) detail += '<div class="ledger-detail">' + escapeHtml(e.sources.join(", ")) + "</div>";
+  return (
+    '<div class="ledger-row">' +
+      '<div class="meta">' +
+        '<span class="ledger-ts">' + time + "</span>" +
+        '<span class="ledger-badge ' + outcomeClass + '">' + escapeHtml(e.intent || "unknown") + "</span>" +
+        (e.cacheHit ? '<span class="ledger-badge dish">cache hit</span>' : "") +
+        (e.dishCount ? '<span class="ledger-badge dish">' + e.dishCount + " dish" + (e.dishCount === 1 ? "" : "es") + "</span>" : "") +
+      "</div>" +
+      detail +
+    "</div>"
+  );
+}
+
+async function loadChatLedger() {
+  const list = document.getElementById("chatLedgerList");
+  try {
+    const r = await fetch(adminUrl("/chat-ledger?limit=50"));
+    const d = await r.json();
+    if (!d.entries || !d.entries.length) {
+      list.innerHTML = '<div class="log-empty">No chatbot queries recorded yet.</div>';
+      return;
+    }
+    list.innerHTML = d.entries.map(renderChatLedgerRow).join("");
+  } catch (e) {
+    list.innerHTML = '<div class="log-empty">Could not load chat ledger: ' + escapeHtml(e.message) + "</div>";
+  }
+}
+loadChatLedger();
+document.getElementById("btnRefreshChatLedger").addEventListener("click", loadChatLedger);
+
 document.getElementById("btnPlan").addEventListener("click", async () => {
   const message = document.getElementById("requestInput").value.trim();
   if (!message) return;
@@ -512,7 +593,7 @@ document.getElementById("btnPlan").addEventListener("click", async () => {
   log("menu-log", "Menu Agent", "parsing request: \"" + message + "\"");
 
   try {
-    const r = await fetch(WORKER_URL + "/admin-update-preview", {
+    const r = await fetch(adminUrl("/admin-update-preview"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message }),
@@ -617,7 +698,7 @@ document.getElementById("btnApprove").addEventListener("click", async () => {
   log("graph-log", "Graph Agent", "executing plan " + currentPlan.planId);
 
   try {
-    const r = await fetch(WORKER_URL + "/admin-update-approve", {
+    const r = await fetch(adminUrl("/admin-update-approve"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ planId: currentPlan.planId }),
