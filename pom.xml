@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.chefkrish</groupId>
+  <artifactId>chefkrish-qa</artifactId>
+  <version>1.0.0</version>
+  <packaging>jar</packaging>
+
+  <name>Chef Krish QA Automation</name>
+  <description>
+    Continuous verification suite for Chef Krish (Taste of India AI chatbot).
+    Runs against the LIVE deployed Cloudflare Worker API and the LIVE GitHub
+    Pages frontend — there is nothing to "build"; index.html and worker.js are
+    deployed independently (Cloudflare Quick Edit / GitHub Pages). This
+    project's only job is regression coverage on top of both, wired into
+    Jenkins so every push runs it automatically.
+  </description>
+
+  <properties>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+    <!-- Overridable from Jenkins via -D flags — see Jenkinsfile.
+         Defaults point at the live production endpoints. -->
+    <chefkrish.baseUrl>https://chef-krish-backend.boddedahimateja.workers.dev</chefkrish.baseUrl>
+    <chefkrish.frontendUrl>https://himatejaboddeda-lab.github.io/Chef_krish_backend/</chefkrish.frontendUrl>
+
+    <testng.version>7.10.2</testng.version>
+    <restassured.version>5.5.0</restassured.version>
+    <selenium.version>4.25.0</selenium.version>
+    <webdrivermanager.version>5.9.2</webdrivermanager.version>
+    <surefire.version>3.5.2</surefire.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+      <version>${testng.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- REST-assured: /chat, /health, /order, /cypher, /chat-ledger etc. -->
+    <dependency>
+      <groupId>io.rest-assured</groupId>
+      <artifactId>rest-assured</artifactId>
+      <version>${restassured.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.rest-assured</groupId>
+      <artifactId>json-path</artifactId>
+      <version>${restassured.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- Selenium: smoke-tests the live GitHub Pages HTML end to end -->
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-java</artifactId>
+      <version>${selenium.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.github.bonigarcia</groupId>
+      <artifactId>webdrivermanager</artifactId>
+      <version>${webdrivermanager.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <finalName>chefkrish-qa</finalName>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${surefire.version}</version>
+        <configuration>
+          <!-- Surefire writes JUnit-format XML into target/surefire-reports
+               even though these are TestNG tests — that's what lets
+               Jenkins' junit step (see Jenkinsfile) publish results without
+               needing a TestNG-specific Jenkins plugin. -->
+          <systemPropertyVariables>
+            <chefkrish.baseUrl>${chefkrish.baseUrl}</chefkrish.baseUrl>
+            <chefkrish.frontendUrl>${chefkrish.frontendUrl}</chefkrish.frontendUrl>
+          </systemPropertyVariables>
+          <suiteXmlFiles>
+            <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
+          </suiteXmlFiles>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <!-- `mvn test -P api-only` — skips Selenium/browser tests entirely.
+         Used by the Jenkinsfile's fast "API" stage; UI tests run in their
+         own stage with a headless Chrome agent. -->
+    <profile>
+      <id>api-only</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <suiteXmlFiles>
+                <suiteXmlFile>src/test/resources/testng-api-only.xml</suiteXmlFile>
+              </suiteXmlFiles>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+</project>
