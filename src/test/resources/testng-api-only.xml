@@ -1,0 +1,11 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="ChefKrishApiOnlySuite" verbose="1">
+  <test name="API">
+    <classes>
+      <class name="com.chefkrish.qa.api.HealthEndpointTest"/>
+      <class name="com.chefkrish.qa.api.ChatEndpointTest"/>
+      <class name="com.chefkrish.qa.api.OrderEndpointTest"/>
+      <class name="com.chefkrish.qa.api.AdminEndpointTest"/>
+    </classes>
+  </test>
+</suite>
