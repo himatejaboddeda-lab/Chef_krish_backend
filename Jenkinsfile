@@ -249,7 +249,7 @@ PY
                                     fi
 
                                     XRAY_IMPORT_URL="https://xray.cloud.getxray.app/api/v2/import/execution/junit?projectKey=${XRAY_PROJECT_KEY_VALUE}"
-                                    if [ -n "$XRAY_TEST_PLAN_KEY_VALUE" ]; then
+                                    if [ -n "${XRAY_TEST_PLAN_KEY_VALUE:-}" ]; then
                                         XRAY_IMPORT_URL="${XRAY_IMPORT_URL}&testPlanKey=${XRAY_TEST_PLAN_KEY_VALUE}"
                                     fi
 
