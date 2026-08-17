@@ -253,12 +253,25 @@ PY
                                         XRAY_IMPORT_URL="${XRAY_IMPORT_URL}&testPlanKey=${XRAY_TEST_PLAN_KEY_VALUE}"
                                     fi
 
-                                    RESPONSE=$(curl --fail --silent --show-error \
+                                    # Keep Xray's response body even for 4xx/5xx errors. Without
+                                    # this, curl only reports "HTTP 400" and hides the useful Jira/
+                                    # Xray explanation (for example, project mapping or permissions).
+                                    XRAY_HTTP_STATUS=$(curl --silent --show-error \
+                                        --output target/xray/import-response.json \
+                                        --write-out '%{http_code}' \
                                         -H 'Content-Type: text/xml' \
                                         -H "Authorization: Bearer ${XRAY_TOKEN}" \
                                         --data-binary '@target/xray/chef-krish-junit-results.xml' \
                                         "$XRAY_IMPORT_URL")
-                                    echo "Xray import completed: ${RESPONSE}"
+
+                                    XRAY_RESPONSE=$(cat target/xray/import-response.json)
+                                    if [ "$XRAY_HTTP_STATUS" -lt 200 ] || [ "$XRAY_HTTP_STATUS" -ge 300 ]; then
+                                        echo "Xray import failed with HTTP ${XRAY_HTTP_STATUS}."
+                                        echo "Xray response: ${XRAY_RESPONSE}"
+                                        exit 4
+                                    fi
+
+                                    echo "Xray import completed: ${XRAY_RESPONSE}"
                                 '''
                             }
                         }
