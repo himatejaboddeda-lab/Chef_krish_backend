@@ -348,7 +348,7 @@ failure_text = ' '.join(
     f"{item.get('name', '')} {item.get('message', '')}" for item in failed_tests
 ).lower()
 security_failure = bool(re.search(
-    r'gate\s*[12]|guardrail|prompt.?injection|jailbreak|allergen',
+    r'gate[ ]*[12]|guardrail|prompt.?injection|jailbreak|allergen',
     failure_text
 ))
 test_failure = failed > 0
