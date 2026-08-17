@@ -20,6 +20,16 @@
 pipeline {
     agent any
 
+    // Jenkins manages this installation itself (Manage Jenkins → Tools →
+    // Maven installations → Add Maven, name it exactly "Maven3", check
+    // "Install automatically"). This puts Maven's bin/ on PATH for every
+    // stage below regardless of what's installed on the host machine —
+    // the pipeline no longer depends on the Jenkins process's own PATH,
+    // which is what caused "mvn: command not found" (exit 127) before.
+    tools {
+        maven 'Maven3'
+    }
+
     options {
         timestamps()
         timeout(time: 20, unit: 'MINUTES')
