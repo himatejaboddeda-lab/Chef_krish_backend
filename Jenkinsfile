@@ -28,6 +28,7 @@ pipeline {
     // which is what caused "mvn: command not found" (exit 127) before.
     tools {
         maven 'Maven3'
+        jdk 'Java17'
     }
 
     options {
